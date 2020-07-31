@@ -16,7 +16,7 @@ namespace Code.Board
 
     public CleaningResult TryClean(BoardState board)
     {
-      var boardStates = new List<int[,]>();
+      var boardStates = new List<Block[,]>();
       bool poofHappened;
       var observedBoard = board.Clone();
       do
@@ -39,13 +39,13 @@ namespace Code.Board
           }
         }
 
-        var poofState = new int[_boardHeight, _boardWidth];
-        var fallDownState = (int[,]) observedBoard.Clone();
+        var poofState = new Block[_boardHeight, _boardWidth];
+        var fallDownState = (Block[,]) observedBoard.Clone();
         for (var x = 0; x < _boardWidth; x++)
         {
           for (var y = 0; y < _boardHeight; y++)
           {
-            poofState[y, x] = poofMap[y, x] ? 10 : observedBoard[y, x];
+            poofState[y, x] = poofMap[y, x] ? Block.Poof1 : observedBoard[y, x];
             fallDownState[y, x] = poofMap[y, x] ? 0 : fallDownState[y, x];
           }
         }
@@ -58,13 +58,13 @@ namespace Code.Board
           boardStates.Add(fallDownState);
         }
 
-        observedBoard = (int[,]) fallDownState.Clone();
+        observedBoard = (Block[,]) fallDownState.Clone();
       } while (poofHappened);
 
       return new CleaningResult(boardStates);
     }
 
-    private static void FallDown(int[,] board)
+    private static void FallDown(Block[,] board)
     {
       for (var x = 0; x < board.GetLength(1); x++)
       {
@@ -84,14 +84,14 @@ namespace Code.Board
       }
     }
 
-    private FloodFillResult FloodFill(int[,] map, int x, int y)
+    private FloodFillResult FloodFill(Block[,] map, int x, int y)
     {
       var result = new FloodFillResult(_boardHeight, _boardWidth);
       FloodFill(result, map, x, y);
       return result;
     }
 
-    private void FloodFill(FloodFillResult result, int[,] map, int x, int y)
+    private void FloodFill(FloodFillResult result, Block[,] map, int x, int y)
     {
       result.FillMap[y, x] = true;
       result.Count++;

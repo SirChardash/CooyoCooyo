@@ -4,34 +4,34 @@ namespace Code.Board
 {
   public class BoardState
   {
-    private int[,] _board;
+    private Block[,] _board;
 
-    public BoardState()
+    public BoardState(int height, int width)
     {
-      _board = new int[10, 8];
+      _board = new Block[height, width];
     }
 
     public bool IsEmpty(int x, int y)
     {
-      return x >= 0 && x < 8 && y < 10 && _board[y, x] == 0;
+      return x >= 0 && x < 8 && y < 10 && _board[y, x] == Block.Empty;
     }
 
-    public int Get(int x, int y)
+    public Block Get(int x, int y)
     {
       return _board[y, x];
     }
 
-    public void Set(int x, int y, int code)
+    public void Set(int x, int y, Block block)
     {
-      _board[y, x] = code;
+      _board[y, x] = block;
     }
 
-    public int[,] Clone()
+    public Block[,] Clone()
     {
-      return (int[,]) _board.Clone();
+      return (Block[,]) _board.Clone();
     }
 
-    public void Set(int[,] board)
+    public void Set(Block[,] board)
     {
       _board = board;
     }

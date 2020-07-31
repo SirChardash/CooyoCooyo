@@ -9,8 +9,8 @@ namespace Code.Board
     private float _timeFalling;
     public Vector2Int StaticBlock = new Vector2Int(3, 1);
     public Vector2Int RotatingBlock = new Vector2Int(3, 0);
-    public int StaticCode;
-    public int RotatingCode;
+    public Block StaticCode;
+    public Block RotatingCode;
     private Orientation _orientation = Orientation.Up;
 
     public void Update(float timeIncrement, BoardState boardState)

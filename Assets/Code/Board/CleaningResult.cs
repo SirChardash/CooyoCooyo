@@ -5,9 +5,9 @@ namespace Code.Board
 {
   public class CleaningResult
   {
-    public readonly List<int[,]> BoardStates;
+    public readonly List<Block[,]> BoardStates;
 
-    public CleaningResult(List<int[,]> boardStates)
+    public CleaningResult(List<Block[,]> boardStates)
     {
       BoardStates = boardStates;
     }

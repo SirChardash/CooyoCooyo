@@ -12,7 +12,7 @@ namespace Code.Handler
     private GameLogic _game;
     private BoardState _board;
     private SpriteRenderer[,] _renderBoard;
-    private IList<Sprite> _spriteMapping;
+    private Dictionary<Block, Sprite> _spriteMapping;
 
     public GameObject blockPrefab;
 
@@ -31,12 +31,13 @@ namespace Code.Handler
         }
       }
 
-      _spriteMapping = new List<Sprite>
+      _spriteMapping = new Dictionary<Block, Sprite>()
       {
-        Resources.Load("Images/Apple_01", typeof(Sprite)) as Sprite,
-        Resources.Load("Images/Cauliflower_01", typeof(Sprite)) as Sprite,
-        Resources.Load("Images/Radish_01", typeof(Sprite)) as Sprite,
-        Resources.Load("Images/Red_current_01", typeof(Sprite)) as Sprite,
+        {Block.Block1, Resources.Load("Images/Apple_01", typeof(Sprite)) as Sprite},
+        {Block.Block2, Resources.Load("Images/Cauliflower_01", typeof(Sprite)) as Sprite},
+        {Block.Block3, Resources.Load("Images/Radish_01", typeof(Sprite)) as Sprite},
+        {Block.Block4, Resources.Load("Images/Red_current_01", typeof(Sprite)) as Sprite},
+        {Block.Poof1, Resources.Load("Images/SpellBook03_02", typeof(Sprite)) as Sprite},
       };
     }
 
@@ -53,7 +54,7 @@ namespace Code.Handler
         {
           if (_board.Get(x, y) != 0)
           {
-            _renderBoard[y, x].sprite = _spriteMapping[_board.Get(x, y) - 1];
+            _renderBoard[y, x].sprite = _spriteMapping[_board.Get(x, y)];
           }
           else
           {
@@ -64,11 +65,11 @@ namespace Code.Handler
 
       var fallingBlock = _game.FallingBlock;
       _renderBoard[fallingBlock.StaticBlock.y, fallingBlock.StaticBlock.x].sprite =
-        _spriteMapping[fallingBlock.StaticCode - 1];
+        _spriteMapping[fallingBlock.StaticCode];
       if (fallingBlock.RotatingBlock.y >= 0)
       {
         _renderBoard[fallingBlock.RotatingBlock.y, fallingBlock.RotatingBlock.x].sprite =
-          _spriteMapping[fallingBlock.RotatingCode - 1];
+          _spriteMapping[fallingBlock.RotatingCode];
       }
     }
   }

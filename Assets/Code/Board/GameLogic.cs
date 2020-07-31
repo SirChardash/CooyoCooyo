@@ -11,8 +11,8 @@ namespace Code.Board
 
     public GameLogic()
     {
-      BoardState = new BoardState();
-      _fallingBlockGenerator = new FallingBlockGenerator();
+      BoardState = new BoardState(10, 8);
+      _fallingBlockGenerator = new FallingBlockGenerator(4);
       FallingBlock = _fallingBlockGenerator.Next();
       _cleaner = new BoardCleaner(10, 8);
     }
