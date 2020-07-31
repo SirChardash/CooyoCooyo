@@ -14,7 +14,7 @@ namespace Code.Board
       BoardState = new BoardState();
       _fallingBlockGenerator = new FallingBlockGenerator();
       FallingBlock = _fallingBlockGenerator.Next();
-      _cleaner = new BoardCleaner();
+      _cleaner = new BoardCleaner(10, 8);
     }
 
     public void Update(float timeIncrement)
@@ -22,7 +22,7 @@ namespace Code.Board
       if (!BoardState.IsEmpty(3, 0)) return; // game over
 
       if (!BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
-      || !BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
+          || !BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
       {
         var staticBlockY = FallingBlock.StaticBlock.y;
         var rotatingBlockY = FallingBlock.RotatingBlock.y;
@@ -31,11 +31,15 @@ namespace Code.Board
 
         if (FallingBlock.StaticBlock.y < FallingBlock.RotatingBlock.y) staticBlockY--;
         else if (FallingBlock.StaticBlock.y > FallingBlock.RotatingBlock.y) rotatingBlockY--;
-        
+
         BoardState.Set(FallingBlock.StaticBlock.x, staticBlockY, FallingBlock.StaticCode);
         BoardState.Set(FallingBlock.RotatingBlock.x, rotatingBlockY, FallingBlock.RotatingCode);
-        BoardState.Set(_cleaner.TryClean(BoardState, FallingBlock.StaticBlock.x, staticBlockY).BoardResult);
-        BoardState.Set(_cleaner.TryClean(BoardState, FallingBlock.RotatingBlock.x, rotatingBlockY).BoardResult);
+        var cleaningResult = _cleaner.TryClean(BoardState);
+        if (cleaningResult.AnythingHappened())
+        {
+          BoardState.Set(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]);
+        }
+
         FallingBlock = _fallingBlockGenerator.Next();
       }
 

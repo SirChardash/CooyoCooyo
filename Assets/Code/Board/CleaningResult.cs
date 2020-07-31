@@ -1,12 +1,20 @@
-﻿namespace Code.Board
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Code.Board
 {
   public class CleaningResult
   {
-    public readonly int[,] BoardResult;
+    public readonly List<int[,]> BoardStates;
 
-    public CleaningResult(int[,] boardResult)
+    public CleaningResult(List<int[,]> boardStates)
     {
-      BoardResult = boardResult;
+      BoardStates = boardStates;
+    }
+
+    public bool AnythingHappened()
+    {
+      return BoardStates.Count > 0;
     }
   }
 }
