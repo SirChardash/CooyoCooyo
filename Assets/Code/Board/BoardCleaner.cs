@@ -72,7 +72,7 @@ namespace Code.Board
         {
           if (board[y, x] == 0) continue;
           var newLocation = y;
-          while (newLocation < 9 && board[newLocation + 1, x] == 0)
+          while (newLocation < board.GetLength(0) - 1 && board[newLocation + 1, x] == 0)
           {
             newLocation++;
           }

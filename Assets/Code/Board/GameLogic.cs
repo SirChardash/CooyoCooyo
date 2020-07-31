@@ -9,12 +9,12 @@ namespace Code.Board
     public FallingBlock FallingBlock;
     private readonly BoardCleaner _cleaner;
 
-    public GameLogic()
+    public GameLogic(int boardHeight, int boardWidth, int blockCount)
     {
-      BoardState = new BoardState(10, 8);
-      _fallingBlockGenerator = new FallingBlockGenerator(4);
+      BoardState = new BoardState(boardHeight, boardWidth);
+      _fallingBlockGenerator = new FallingBlockGenerator(blockCount);
       FallingBlock = _fallingBlockGenerator.Next();
-      _cleaner = new BoardCleaner(10, 8);
+      _cleaner = new BoardCleaner(boardHeight, boardWidth);
     }
 
     public void Update(float timeIncrement)

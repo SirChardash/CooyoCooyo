@@ -7,6 +7,7 @@ namespace Code.Board
   {
     private float _timeToFall = 0.5f;
     private float _timeFalling;
+    // todo: make blocks always fall somewhat on centre
     public Vector2Int StaticBlock = new Vector2Int(3, 1);
     public Vector2Int RotatingBlock = new Vector2Int(3, 0);
     public Block StaticCode;

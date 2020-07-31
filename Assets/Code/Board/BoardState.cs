@@ -13,7 +13,10 @@ namespace Code.Board
 
     public bool IsEmpty(int x, int y)
     {
-      return x >= 0 && x < 8 && y < 10 && _board[y, x] == Block.Empty;
+      return x >= 0
+             && x < _board.GetLength(1)
+             && y < _board.GetLength(0)
+             && _board[y, x] == Block.Empty;
     }
 
     public Block Get(int x, int y)

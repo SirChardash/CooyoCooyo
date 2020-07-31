@@ -16,14 +16,18 @@ namespace Code.Handler
 
     public GameObject blockPrefab;
 
+    private const int BoardHeight = 10;
+    private const int BoardWidth = 6;
+    private const int BlockCount = 4;
+    
     void Start()
     {
-      _game = new GameLogic();
+      _game = new GameLogic(BoardHeight, BoardWidth, BlockCount);
       _board = _game.BoardState;
-      _renderBoard = new SpriteRenderer[10, 8];
-      for (var x = 0; x < 8; x++)
+      _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
+      for (var x = 0; x < BoardWidth; x++)
       {
-        for (var y = 0; y < 10; y++)
+        for (var y = 0; y < BoardHeight; y++)
         {
           var block = Instantiate(blockPrefab);
           block.transform.position = new Vector2(Scale * (x - 4), Scale * (5 - y));
@@ -48,9 +52,9 @@ namespace Code.Handler
 
     private void OnGUI()
     {
-      for (var x = 0; x < 8; x++)
+      for (var x = 0; x < BoardWidth; x++)
       {
-        for (var y = 0; y < 10; y++)
+        for (var y = 0; y < BoardHeight; y++)
         {
           if (_board.Get(x, y) != 0)
           {
