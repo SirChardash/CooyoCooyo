@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Code.Board;
+using Code.Events;
 using UnityEngine;
 
 namespace Code.Handler
@@ -19,7 +20,9 @@ namespace Code.Handler
     private const int BoardHeight = 10;
     private const int BoardWidth = 6;
     private const int BlockCount = 4;
-    
+
+    private CleaningResult _cleaningResult;
+
     void Start()
     {
       _game = new GameLogic(BoardHeight, BoardWidth, BlockCount);
@@ -47,7 +50,35 @@ namespace Code.Handler
 
     void Update()
     {
-      _game.Update(Time.deltaTime);
+      if (_cleaningResult != null)
+      {
+        HandleCleaningAnimation(Time.deltaTime);
+        return;
+      }
+
+      try
+      {
+        _game.Update(Time.deltaTime);
+      }
+      catch (BoardCleaningEvent e)
+      {
+        _cleaningResult = e.CleaningResult;
+      }
+    }
+
+    private const float SlideDuration = 1f;
+    private float _slideProgress;
+
+    private void HandleCleaningAnimation(float timeIncrement)
+    {
+      _slideProgress += timeIncrement;
+      if (_slideProgress >= SlideDuration)
+      {
+        _board.Set(_cleaningResult.BoardStates[0]);
+        _cleaningResult.BoardStates.RemoveAt(0);
+        _cleaningResult = _cleaningResult.BoardStates.Count > 0 ? _cleaningResult : null;
+        _slideProgress -= SlideDuration;
+      }
     }
 
     private void OnGUI()
@@ -56,16 +87,11 @@ namespace Code.Handler
       {
         for (var y = 0; y < BoardHeight; y++)
         {
-          if (_board.Get(x, y) != 0)
-          {
-            _renderBoard[y, x].sprite = _spriteMapping[_board.Get(x, y)];
-          }
-          else
-          {
-            _renderBoard[y, x].sprite = null;
-          }
+          _renderBoard[y, x].sprite = _board.Get(x, y) != 0 ? _spriteMapping[_board.Get(x, y)] : null;
         }
       }
+
+      if (_cleaningResult != null) return;
 
       var fallingBlock = _game.FallingBlock;
       _renderBoard[fallingBlock.StaticBlock.y, fallingBlock.StaticBlock.x].sprite =

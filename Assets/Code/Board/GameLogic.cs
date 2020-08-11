@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Code.Events;
+using UnityEngine;
 
 namespace Code.Board
 {
@@ -35,13 +36,10 @@ namespace Code.Board
 
         BoardState.Set(FallingBlock.StaticBlock.x, staticBlockY, FallingBlock.StaticCode);
         BoardState.Set(FallingBlock.RotatingBlock.x, rotatingBlockY, FallingBlock.RotatingCode);
-        var cleaningResult = _cleaner.TryClean(BoardState);
-        if (cleaningResult.AnythingHappened())
-        {
-          BoardState.Set(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]);
-        }
-
         FallingBlock = _fallingBlockGenerator.Next();
+
+        var cleaningResult = _cleaner.TryClean(BoardState);
+        if (cleaningResult.AnythingHappened()) throw new BoardCleaningEvent {CleaningResult = cleaningResult};
       }
       else
       {
