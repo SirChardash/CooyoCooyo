@@ -7,6 +7,7 @@ namespace Code.Board
   {
     private float _timeToFall = 0.5f;
     private float _timeFalling;
+    private bool _fallFast;
     // todo: make blocks always fall somewhat on centre
     public Vector2Int StaticBlock = new Vector2Int(3, 1);
     public Vector2Int RotatingBlock = new Vector2Int(3, 0);
@@ -16,6 +17,11 @@ namespace Code.Board
 
     public void Update(float timeIncrement, BoardState boardState)
     {
+      if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
+      _timeFalling += timeIncrement;
+
+      if (_fallFast) return;
+
       if (Input.GetKeyDown(KeyCode.LeftArrow)
           && boardState.IsEmpty(StaticBlock.x - 1, StaticBlock.y)
           && boardState.IsEmpty(RotatingBlock.x - 1, RotatingBlock.y))
@@ -30,26 +36,30 @@ namespace Code.Board
         StaticBlock.x++;
         RotatingBlock.x++;
       }
+    }
 
-      if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
+    public void DropDown()
+    {
+      StaticBlock.y++;
+      RotatingBlock.y++;
+      _timeFalling -= _timeToFall;
+    }
 
-      _timeFalling += timeIncrement;
-      if (_timeFalling >= _timeToFall)
-      {
-        StaticBlock.y++;
-        RotatingBlock.y++;
-        _timeFalling -= _timeToFall;
-      }
-
-      if (Input.GetKeyDown(KeyCode.DownArrow))
-      {
-        _timeToFall /= 10;
-      }
+    public void FallFast()
+    {
+      _timeToFall /= 10;
+      _fallFast = true;
+      _timeFalling = _timeToFall;
     }
 
     public float GetBlockProgress()
     {
       return _timeToFall / _timeFalling;
+    }
+
+    public bool ShouldDrop()
+    {
+      return GetBlockProgress() >= 1f;
     }
 
     private void TryRotate(BoardState boardState)

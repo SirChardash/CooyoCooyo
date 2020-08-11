@@ -21,8 +21,9 @@ namespace Code.Board
     {
       if (!BoardState.IsEmpty(3, 0)) return; // game over
 
-      if (!BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
-          || !BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
+      if ((!BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
+           || !BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
+          && FallingBlock.ShouldDrop())
       {
         var staticBlockY = FallingBlock.StaticBlock.y;
         var rotatingBlockY = FallingBlock.RotatingBlock.y;
@@ -41,6 +42,17 @@ namespace Code.Board
         }
 
         FallingBlock = _fallingBlockGenerator.Next();
+      }
+      else
+      {
+        if (Input.GetKeyDown(KeyCode.DownArrow)
+            && BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
+            && BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
+        {
+          FallingBlock.FallFast();
+        }
+
+        if (FallingBlock.ShouldDrop()) FallingBlock.DropDown();
       }
 
       FallingBlock.Update(timeIncrement, BoardState);
