@@ -25,7 +25,12 @@ namespace Code.Handler
 
     void Start()
     {
-      _game = new GameLogic(BoardHeight, BoardWidth, BlockCount);
+      var levelObjectives = new List<LevelObjective>
+      {
+        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}, {Block.Block2, 3}, {Block.Block3, 1}})
+      };
+
+      _game = new GameLogic(BoardHeight, BoardWidth, BlockCount, new Scoreboard(levelObjectives));
       _board = _game.BoardState;
       _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
       for (var x = 0; x < BoardWidth; x++)
@@ -66,7 +71,7 @@ namespace Code.Handler
       }
     }
 
-    private const float SlideDuration = 1f;
+    private const float SlideDuration = 0.45f;
     private float _slideProgress;
 
     private void HandleCleaningAnimation(float timeIncrement)
