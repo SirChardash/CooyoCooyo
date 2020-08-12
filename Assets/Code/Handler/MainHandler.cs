@@ -22,12 +22,13 @@ namespace Code.Handler
     private const int BlockCount = 4;
 
     private CleaningResult _cleaningResult;
-
+    
     void Start()
     {
       var levelObjectives = new List<LevelObjective>
       {
-        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}, {Block.Block2, 3}, {Block.Block3, 1}})
+        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}, {Block.Block2, 3}, {Block.Block3, 1}}),
+        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}})
       };
 
       _game = new GameLogic(BoardHeight, BoardWidth, BlockCount, new Scoreboard(levelObjectives));
@@ -68,6 +69,10 @@ namespace Code.Handler
       catch (BoardCleaningEvent e)
       {
         _cleaningResult = e.CleaningResult;
+      }
+      catch (GameEndEvent e)
+      {
+        Destroy(this);
       }
     }
 

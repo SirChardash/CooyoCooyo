@@ -1,15 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Code.Board
 {
   public class CleaningResult
   {
     public readonly List<Block[,]> BoardStates;
-
-    public CleaningResult(List<Block[,]> boardStates)
+    public readonly List<Poof> Poofs;
+    
+    
+    public CleaningResult(List<Block[,]> boardStates, List<Poof> poofs)
     {
       BoardStates = boardStates;
+      Poofs = poofs;
     }
 
     public bool AnythingHappened()

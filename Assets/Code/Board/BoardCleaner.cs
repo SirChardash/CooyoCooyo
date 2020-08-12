@@ -17,6 +17,7 @@ namespace Code.Board
     public CleaningResult TryClean(BoardState board)
     {
       var boardStates = new List<Block[,]>();
+      var poofs = new List<Poof>();
       bool poofHappened;
       var observedBoard = board.Clone();
       do
@@ -33,6 +34,7 @@ namespace Code.Board
               if (result.Count > 3)
               {
                 Array2DUtils.Or(poofMap, result.FillMap);
+                poofs.Add(new Poof {Block = observedBoard[y,x], Count = result.Count});
                 poofHappened = true;
               }
             }
@@ -61,7 +63,7 @@ namespace Code.Board
         observedBoard = (Block[,]) fallDownState.Clone();
       } while (poofHappened);
 
-      return new CleaningResult(boardStates);
+      return new CleaningResult(boardStates, poofs);
     }
 
     private static void FallDown(Block[,] board)
