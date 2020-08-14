@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Code.Board
 {
@@ -15,10 +14,10 @@ namespace Code.Board
     public Block RotatingCode;
     private Orientation _orientation = Orientation.Up;
 
-    public void Update(float timeIncrement, BoardState boardState)
+    public void Update(float deltaTime, BoardState boardState)
     {
       if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
-      _timeFalling += timeIncrement;
+      _timeFalling += deltaTime;
 
       if (_fallFast) return;
 

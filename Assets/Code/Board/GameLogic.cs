@@ -24,7 +24,7 @@ namespace Code.Board
       _scoreboard = scoreboard;
     }
 
-    public void Update(float timeIncrement)
+    public void Update(float deltaTime)
     {
       if (_scoreboard.IsComplete()) End(true);
 
@@ -35,7 +35,7 @@ namespace Code.Board
 
       if (MessBlocks != null)
       {
-        HandleMessBlocks(timeIncrement);
+        HandleMessBlocks(deltaTime);
         return;
       }
 
@@ -44,12 +44,12 @@ namespace Code.Board
           && FallingBlock.ShouldDrop()) HandleFallingBlockPlacement();
       else HandleFastFall();
 
-      FallingBlock.Update(timeIncrement, BoardState);
+      FallingBlock.Update(deltaTime, BoardState);
     }
 
-    private void HandleMessBlocks(float timeIncrement)
+    private void HandleMessBlocks(float deltaTime)
     {
-      MessBlocks.Update(timeIncrement);
+      MessBlocks.Update(deltaTime);
 
       if (!MessBlocks.ShouldDrop()) return;
       MessBlocks.ConfirmFalling();

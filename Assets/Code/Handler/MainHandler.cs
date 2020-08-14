@@ -79,9 +79,9 @@ namespace Code.Handler
     private const float SlideDuration = 0.45f;
     private float _slideProgress;
 
-    private void HandleCleaningAnimation(float timeIncrement)
+    private void HandleCleaningAnimation(float deltaTime)
     {
-      _slideProgress += timeIncrement;
+      _slideProgress += deltaTime;
       if (_slideProgress >= SlideDuration)
       {
         _board.Set(_cleaningResult.BoardStates[0]);

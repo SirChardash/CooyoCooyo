@@ -19,9 +19,9 @@ namespace Code.Board
       Blocks.Remove(messBlock);
     }
 
-    public void Update(float timeIncrement)
+    public void Update(float deltaTime)
     {
-      _timeFalling += timeIncrement;
+      _timeFalling += deltaTime;
     }
 
     public float GetBlockProgress()
