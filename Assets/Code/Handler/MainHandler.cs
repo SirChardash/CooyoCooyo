@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Code.Board;
 using Code.Events;
 using UnityEngine;
@@ -22,7 +21,7 @@ namespace Code.Handler
     private const int BlockCount = 4;
 
     private CleaningResult _cleaningResult;
-    
+
     void Start()
     {
       var levelObjectives = new List<LevelObjective>
@@ -51,6 +50,7 @@ namespace Code.Handler
         {Block.Block3, Resources.Load("Images/Radish_01", typeof(Sprite)) as Sprite},
         {Block.Block4, Resources.Load("Images/Red_current_01", typeof(Sprite)) as Sprite},
         {Block.Poof1, Resources.Load("Images/SpellBook03_02", typeof(Sprite)) as Sprite},
+        {Block.Mess, Resources.Load("Images/SpellBook03_103", typeof(Sprite)) as Sprite},
       };
     }
 
@@ -111,6 +111,11 @@ namespace Code.Handler
         _renderBoard[fallingBlock.RotatingBlock.y, fallingBlock.RotatingBlock.x].sprite =
           _spriteMapping[fallingBlock.RotatingCode];
       }
+
+      _game.MessBlocks?.Blocks.ForEach(block =>
+      {
+        _renderBoard[block.Position.y, block.Position.x].sprite = _spriteMapping[block.Block];
+      });
     }
   }
 }

@@ -28,13 +28,13 @@ namespace Code.Board
         {
           for (var y = 0; y < _boardHeight; y++)
           {
-            if (!poofMap[y, x] && observedBoard[y, x] != 0)
+            if (!poofMap[y, x] && observedBoard[y, x] != Block.Empty && observedBoard[y, x] != Block.Mess)
             {
               var result = FloodFill(observedBoard, x, y);
               if (result.Count > 3)
               {
                 Array2DUtils.Or(poofMap, result.FillMap);
-                poofs.Add(new Poof {Block = observedBoard[y,x], Count = result.Count});
+                poofs.Add(new Poof {Block = observedBoard[y, x], Count = result.Count});
                 poofHappened = true;
               }
             }
@@ -96,13 +96,23 @@ namespace Code.Board
     private void FloodFill(FloodFillResult result, Block[,] map, int x, int y)
     {
       result.FillMap[y, x] = true;
-      result.Count++;
-      if (x > 0 && map[y, x - 1] == map[y, x] && !result.FillMap[y, x - 1]) FloodFill(result, map, x - 1, y);
-      if (x < _boardWidth - 1 && map[y, x + 1] == map[y, x] && !result.FillMap[y, x + 1])
-        FloodFill(result, map, x + 1, y);
-      if (y > 0 && map[y - 1, x] == map[y, x] && !result.FillMap[y - 1, x]) FloodFill(result, map, x, y - 1);
-      if (y < _boardHeight - 1 && map[y + 1, x] == map[y, x] && !result.FillMap[y + 1, x])
-        FloodFill(result, map, x, y + 1);
+      if (map[y, x] != Block.Mess) result.Count++;
+
+      if (x > 0
+          && (map[y, x - 1] == map[y, x] || map[y, x - 1] == Block.Mess)
+          && !result.FillMap[y, x - 1]) FloodFill(result, map, x - 1, y);
+
+      if (x < _boardWidth - 1
+          && (map[y, x + 1] == map[y, x] || map[y, x + 1] == Block.Mess)
+          && !result.FillMap[y, x + 1]) FloodFill(result, map, x + 1, y);
+
+      if (y > 0
+          && (map[y - 1, x] == map[y, x] || map[y - 1, x] == Block.Mess)
+          && !result.FillMap[y - 1, x]) FloodFill(result, map, x, y - 1);
+
+      if (y < _boardHeight - 1
+          && (map[y + 1, x] == map[y, x] || map[y + 1, x] == Block.Mess)
+          && !result.FillMap[y + 1, x]) FloodFill(result, map, x, y + 1);
     }
 
     private class FloodFillResult
