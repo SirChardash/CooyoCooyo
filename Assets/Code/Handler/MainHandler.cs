@@ -193,6 +193,7 @@ namespace Code.Handler
       }
 
       var row = 0;
+      if (_scoreboard.GetCurrentObjective() == null) return;
       foreach (var objective in _scoreboard.GetCurrentObjective().Objectives)
       {
         for (var i = 0; i < objective.Value; i++)
