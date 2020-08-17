@@ -6,13 +6,15 @@ namespace Code.Board
   {
     private float _timeToFall = 0.5f;
     private float _timeFalling;
+
     private bool _fallFast;
+
     // todo: make blocks always fall somewhat on centre
     public Vector2Int StaticBlock = new Vector2Int(3, 1);
     public Vector2Int RotatingBlock = new Vector2Int(3, 0);
     public Block StaticCode;
     public Block RotatingCode;
-    private Orientation _orientation = Orientation.Up;
+    public BlockOrientation Orientation = BlockOrientation.Up;
 
     public void Update(float deltaTime, BoardState boardState)
     {
@@ -53,7 +55,7 @@ namespace Code.Board
 
     public float GetBlockProgress()
     {
-      return _timeToFall / _timeFalling;
+      return _timeFalling / _timeToFall;
     }
 
     public bool ShouldDrop()
@@ -63,19 +65,19 @@ namespace Code.Board
 
     private void TryRotate(BoardState boardState)
     {
-      switch (_orientation)
+      switch (Orientation)
       {
-        case Orientation.Up:
+        case BlockOrientation.Up:
         {
           if (boardState.IsEmpty(StaticBlock.x + 1, StaticBlock.y))
           {
-            _orientation = Orientation.Right;
+            Orientation = BlockOrientation.Right;
             RotatingBlock.x = StaticBlock.x + 1;
             RotatingBlock.y = StaticBlock.y;
           }
           else if (boardState.IsEmpty(StaticBlock.x - 1, StaticBlock.y))
           {
-            _orientation = Orientation.Right;
+            Orientation = BlockOrientation.Right;
             RotatingBlock.x = StaticBlock.x;
             RotatingBlock.y = StaticBlock.y;
             StaticBlock.x -= 1;
@@ -83,9 +85,9 @@ namespace Code.Board
 
           break;
         }
-        case Orientation.Right:
+        case BlockOrientation.Right:
         {
-          _orientation = Orientation.Down;
+          Orientation = BlockOrientation.Down;
           if (boardState.IsEmpty(StaticBlock.x, StaticBlock.y + 1))
           {
             RotatingBlock.x = StaticBlock.x;
@@ -100,17 +102,17 @@ namespace Code.Board
 
           break;
         }
-        case Orientation.Down:
+        case BlockOrientation.Down:
         {
           if (boardState.IsEmpty(StaticBlock.x - 1, StaticBlock.y))
           {
-            _orientation = Orientation.Left;
+            Orientation = BlockOrientation.Left;
             RotatingBlock.x = StaticBlock.x - 1;
             RotatingBlock.y = StaticBlock.y;
           }
           else if (boardState.IsEmpty(StaticBlock.x + 1, StaticBlock.y))
           {
-            _orientation = Orientation.Left;
+            Orientation = BlockOrientation.Left;
             RotatingBlock.x = StaticBlock.x;
             RotatingBlock.y = StaticBlock.y;
             StaticBlock.x += 1;
@@ -118,9 +120,9 @@ namespace Code.Board
 
           break;
         }
-        case Orientation.Left:
+        case BlockOrientation.Left:
         {
-          _orientation = Orientation.Up;
+          Orientation = BlockOrientation.Up;
           RotatingBlock.x = StaticBlock.x;
           RotatingBlock.y = StaticBlock.y - 1;
           break;
@@ -128,7 +130,7 @@ namespace Code.Board
       }
     }
 
-    private enum Orientation
+    public enum BlockOrientation
     {
       Up,
       Down,

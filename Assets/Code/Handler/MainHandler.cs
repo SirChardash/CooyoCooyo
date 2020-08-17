@@ -17,6 +17,11 @@ namespace Code.Handler
     private readonly SpriteRenderer[,] _renderObjectives = new SpriteRenderer[5, 5];
 
     public GameObject blockPrefab;
+    private SpriteRenderer _fallingBlockStaticRenderer;
+    private SpriteRenderer _fallingBlockRotatingRenderer;
+    private Transform _fallingBlockStaticTransform;
+    private Transform _fallingBlockRotatingTransform;
+
 
     private const int BoardHeight = 10;
     private const int BoardWidth = 6;
@@ -41,10 +46,17 @@ namespace Code.Handler
         for (var y = 0; y < BoardHeight; y++)
         {
           var block = Instantiate(blockPrefab);
-          block.transform.position = new Vector2(Scale * (x - 4), Scale * (5 - y));
+          block.transform.position = GetBoardCoordinates(x, y);
           _renderBoard[y, x] = block.GetComponent<SpriteRenderer>();
         }
       }
+
+      var staticBlock = Instantiate(blockPrefab);
+      var rotatingBlock = Instantiate(blockPrefab);
+      _fallingBlockStaticRenderer = staticBlock.GetComponent<SpriteRenderer>();
+      _fallingBlockRotatingRenderer = rotatingBlock.GetComponent<SpriteRenderer>();
+      _fallingBlockStaticTransform = staticBlock.transform;
+      _fallingBlockRotatingTransform = rotatingBlock.transform;
 
       var scoreboardPosition = new Vector2(Scale * 4, Scale * 2);
       for (var x = 0; x < 5; x++)
@@ -57,7 +69,7 @@ namespace Code.Handler
         }
       }
 
-      _spriteMapping = new Dictionary<Block, Sprite>()
+      _spriteMapping = new Dictionary<Block, Sprite>
       {
         {Block.Block1, Resources.Load("Images/Apple_01", typeof(Sprite)) as Sprite},
         {Block.Block2, Resources.Load("Images/Cauliflower_01", typeof(Sprite)) as Sprite},
@@ -83,8 +95,10 @@ namespace Code.Handler
       catch (BoardCleaningEvent e)
       {
         _cleaningResult = e.CleaningResult;
+        _fallingBlockRotatingRenderer.sprite = null;
+        _fallingBlockStaticRenderer.sprite = null;
       }
-      catch (GameEndEvent e)
+      catch (GameEndEvent)
       {
         Destroy(this);
       }
@@ -119,19 +133,53 @@ namespace Code.Handler
 
       if (_cleaningResult != null) return;
 
-      var fallingBlock = _game.FallingBlock;
-      _renderBoard[fallingBlock.StaticBlock.y, fallingBlock.StaticBlock.x].sprite =
-        _spriteMapping[fallingBlock.StaticCode];
-      if (fallingBlock.RotatingBlock.y >= 0)
-      {
-        _renderBoard[fallingBlock.RotatingBlock.y, fallingBlock.RotatingBlock.x].sprite =
-          _spriteMapping[fallingBlock.RotatingCode];
-      }
+      RenderFallingBlock();
 
       _game.MessBlocks?.Blocks.ForEach(block =>
       {
         _renderBoard[block.Position.y, block.Position.x].sprite = _spriteMapping[block.Block];
       });
+    }
+
+    private void RenderFallingBlock()
+    {
+      var fallingBlock = _game.FallingBlock;
+      var staticBlock = _game.FallingBlock.StaticBlock;
+      var rotatingBlock = fallingBlock.RotatingBlock;
+
+      if (_board.IsEmpty(staticBlock.x, staticBlock.y))
+      {
+        _fallingBlockStaticRenderer.sprite = _spriteMapping[fallingBlock.StaticCode];
+        _fallingBlockStaticTransform.position = FallingBlockProgress(
+          staticBlock,
+          fallingBlock.GetBlockProgress(),
+          fallingBlock.Orientation == FallingBlock.BlockOrientation.Down
+        );
+      }
+
+      if (rotatingBlock.y >= 0 && _board.IsEmpty(rotatingBlock.x, rotatingBlock.y))
+      {
+        _fallingBlockRotatingRenderer.sprite = _spriteMapping[fallingBlock.RotatingCode];
+        _fallingBlockRotatingTransform.position = FallingBlockProgress(
+          rotatingBlock,
+          fallingBlock.GetBlockProgress(),
+          fallingBlock.Orientation == FallingBlock.BlockOrientation.Up
+        );
+      }
+    }
+
+    private Vector2 FallingBlockProgress(Vector2Int block, float fallingProgress, bool topFallingBlock)
+    {
+      var animationProgress = fallingProgress * fallingProgress;
+
+      var startPos = GetBoardCoordinates(block.x, block.y);
+      var endPos = GetBoardCoordinates(block.x, block.y + 1);
+      var trueProgress =
+        _board.IsEmpty(block.x, block.y + 1) &&
+        (!topFallingBlock || (_board.IsEmpty(block.x, block.y + 2)))
+          ? animationProgress
+          : 0;
+      return Vector2.Lerp(startPos, endPos, t: trueProgress);
     }
 
     private void RenderScoreboard()
@@ -143,7 +191,7 @@ namespace Code.Handler
           _renderObjectives[i, j].sprite = null;
         }
       }
-      
+
       var row = 0;
       foreach (var objective in _scoreboard.GetCurrentObjective().Objectives)
       {
@@ -154,6 +202,11 @@ namespace Code.Handler
 
         row++;
       }
+    }
+
+    private static Vector2 GetBoardCoordinates(int x, int y)
+    {
+      return new Vector2(Scale * (x - 4), Scale * (5 - y));
     }
   }
 }
