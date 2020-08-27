@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Code.Board
 {
   public class MessBlocks
   {
-    private float _timeToFall = 0.1f;
-    private float _timeFalling;
     public readonly List<MessBlock> Blocks;
 
     public MessBlocks(List<MessBlock> blocks)
@@ -21,22 +20,10 @@ namespace Code.Board
 
     public void Update(float deltaTime)
     {
-      _timeFalling += deltaTime;
-    }
-
-    public float GetBlockProgress()
-    {
-      return _timeToFall / _timeFalling;
-    }
-
-    public bool ShouldDrop()
-    {
-      return GetBlockProgress() >= 1f;
-    }
-
-    public void ConfirmFalling()
-    {
-      _timeFalling -= _timeToFall;
+      Blocks.ForEach(block =>
+      {
+        block.Update(deltaTime);
+      });
     }
 
     public bool IsEmpty()
@@ -44,19 +31,37 @@ namespace Code.Board
       return Blocks.Count == 0;
     }
 
+    public List<MessBlock> GetShouldDropBlocks()
+    {
+      return Blocks.Where(block => block.ShouldDrop()).ToList();
+    }
+
     public class MessBlock
     {
-      public Vector2Int Position;
+      public Vector2Int ExpectedPosition;
       public readonly Block Block = Block.Mess;
+      private float _timeToFall;
+      private float _timeFalling;
       
-      public MessBlock(int x)
+      public float GetBlockProgress()
       {
-        Position = new Vector2Int(x, 0);
+        return _timeFalling / _timeToFall;
+      }
+      
+      public bool ShouldDrop()
+      {
+        return GetBlockProgress() >= 1f;
       }
 
-      public void DropDown()
+      public void Update(float deltaTime)
       {
-        Position.y++;
+        _timeFalling += deltaTime;
+      }
+      
+      public MessBlock(int x, int y)
+      {
+        _timeToFall = 0.1f * y;
+        ExpectedPosition = new Vector2Int(x, y);
       }
     }
   }

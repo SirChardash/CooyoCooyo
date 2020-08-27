@@ -17,6 +17,7 @@ namespace Code.Handler
     private readonly SpriteRenderer[,] _renderObjectives = new SpriteRenderer[5, 5];
 
     public GameObject blockPrefab;
+    public GameObject messBlockPrefab;
     private SpriteRenderer _fallingBlockStaticRenderer;
     private SpriteRenderer _fallingBlockRotatingRenderer;
     private Transform _fallingBlockStaticTransform;
@@ -94,6 +95,7 @@ namespace Code.Handler
       }
       catch (BoardCleaningEvent e)
       {
+        if (_game.MessBlocks != null) InstantiateMess();
         _cleaningResult = e.CleaningResult;
         _fallingBlockRotatingRenderer.sprite = null;
         _fallingBlockStaticRenderer.sprite = null;
@@ -134,13 +136,20 @@ namespace Code.Handler
       if (_cleaningResult != null) return;
 
       RenderFallingBlock();
-
-      _game.MessBlocks?.Blocks.ForEach(block =>
-      {
-        _renderBoard[block.Position.y, block.Position.x].sprite = _spriteMapping[block.Block];
-      });
     }
 
+    private void InstantiateMess()
+    {
+      var messBlocks = _game.MessBlocks.Blocks;
+      foreach (var messBlock in messBlocks)
+      {
+        var instantiate = Instantiate(messBlockPrefab);
+        var handler = instantiate.GetComponent<MessHandler>();
+        handler.sprite = _spriteMapping[messBlock.Block];
+        handler.messBlock = messBlock;
+      }
+    }
+    
     private void RenderFallingBlock()
     {
       var fallingBlock = _game.FallingBlock;

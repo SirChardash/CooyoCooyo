@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Code.Board
+﻿namespace Code.Board
 {
   public class BoardState
   {
@@ -9,6 +7,11 @@ namespace Code.Board
     public BoardState(int height, int width)
     {
       _board = new Block[height, width];
+    }
+
+    public BoardState(Block[,] board)
+    {
+      _board = board;
     }
 
     public bool IsEmpty(int x, int y)

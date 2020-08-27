@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Code.Events;
+﻿using Code.Events;
 using UnityEngine;
 
 namespace Code.Board
@@ -50,25 +49,12 @@ namespace Code.Board
     private void HandleMessBlocks(float deltaTime)
     {
       MessBlocks.Update(deltaTime);
-
-      if (!MessBlocks.ShouldDrop()) return;
-      MessBlocks.ConfirmFalling();
-
-      var toConfirm = new List<MessBlocks.MessBlock>();
-      MessBlocks.Blocks.ForEach(block =>
+      foreach (var block in MessBlocks.GetShouldDropBlocks())
       {
-        if (BoardState.IsEmpty(block.Position.x, block.Position.y + 1))
-        {
-          block.DropDown();
-        }
-        else
-        {
-          BoardState.Set(block.Position.x, block.Position.y, block.Block);
-          toConfirm.Add(block);
-        }
-      });
+        BoardState.Set(block.ExpectedPosition.x, block.ExpectedPosition.y, block.Block);
+        MessBlocks.Confirm(block);
+      }
 
-      toConfirm.ForEach(block => MessBlocks.Confirm(block));
       if (MessBlocks.IsEmpty()) MessBlocks = null;
     }
 
@@ -103,7 +89,9 @@ namespace Code.Board
       {
         var penalty = _scoreboard.TryContribute(cleaningResult.Poofs);
         Debug.Log($"penalty: {penalty}");
-        MessBlocks = _fallingBlockGenerator.Mess(penalty);
+        MessBlocks = _fallingBlockGenerator.Mess(penalty,
+          new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
+        
 
         if (!_scoreboard.IsComplete())
         {

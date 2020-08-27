@@ -25,14 +25,20 @@ namespace Code.Board
       };
     }
 
-    public MessBlocks Mess(int penalty)
+    public MessBlocks Mess(int penalty, BoardState board)
     {
       if (penalty <= 0) return null;
 
       var randoms = new HashSet<int>();
       while (randoms.Count < penalty) randoms.Add(_random.Next(_boardWidth));
 
-      return new MessBlocks(randoms.Select(x => new MessBlocks.MessBlock(x)).ToList());
+      var y = new int[_boardWidth];
+      for (var x = 0; x < _boardWidth; x++)
+      {
+        while (board.IsEmpty(x, y[x] + 1)) y[x]++;
+      }
+
+      return new MessBlocks(randoms.Select(x => new MessBlocks.MessBlock(x, y[x])).ToList());
     }
   }
 }
