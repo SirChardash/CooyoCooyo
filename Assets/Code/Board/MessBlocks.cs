@@ -40,7 +40,7 @@ namespace Code.Board
     {
       public Vector2Int ExpectedPosition;
       public readonly Block Block = Block.Mess;
-      private float _timeToFall;
+      private readonly float _timeToFall;
       private float _timeFalling;
       
       public float GetBlockProgress()
@@ -60,7 +60,7 @@ namespace Code.Board
       
       public MessBlock(int x, int y)
       {
-        _timeToFall = 0.1f * y;
+        _timeToFall = 1f * (y / 10f);
         ExpectedPosition = new Vector2Int(x, y);
       }
     }

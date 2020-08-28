@@ -3,23 +3,26 @@ using UnityEngine;
 
 namespace Code.Board
 {
+  public delegate void MessFallEvent(MessBlocks messBlocks);
+
   public class GameLogic
   {
     public readonly BoardState BoardState;
     private readonly FallingBlockGenerator _fallingBlockGenerator;
     public FallingBlock FallingBlock;
-    public MessBlocks MessBlocks;
     private readonly BoardCleaner _cleaner;
     private readonly int _boardWidth;
     private readonly Scoreboard _scoreboard;
 
-    public GameLogic(int boardHeight, int boardWidth, int blockCount, Scoreboard scoreboard)
+    public event MessFallEvent MessFallEvent;
+
+    public GameLogic(BoardState boardState, int blockCount, Scoreboard scoreboard)
     {
-      BoardState = new BoardState(boardHeight, boardWidth);
-      _boardWidth = boardWidth;
-      _fallingBlockGenerator = new FallingBlockGenerator(blockCount, boardWidth);
+      BoardState = boardState;
+      _boardWidth = boardState.Width;
+      _fallingBlockGenerator = new FallingBlockGenerator(blockCount, boardState.Width);
       FallingBlock = _fallingBlockGenerator.Next();
-      _cleaner = new BoardCleaner(boardHeight, boardWidth);
+      _cleaner = new BoardCleaner(boardState.Height, boardState.Width);
       _scoreboard = scoreboard;
     }
 
@@ -32,30 +35,12 @@ namespace Code.Board
         if (!BoardState.IsEmpty(x, 0)) End(false);
       }
 
-      if (MessBlocks != null)
-      {
-        HandleMessBlocks(deltaTime);
-        return;
-      }
-
       if ((!BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
            || !BoardState.IsEmpty(FallingBlock.RotatingBlock.x, FallingBlock.RotatingBlock.y + 1))
           && FallingBlock.ShouldDrop()) HandleFallingBlockPlacement();
       else HandleFastFall();
 
       FallingBlock.Update(deltaTime, BoardState);
-    }
-
-    private void HandleMessBlocks(float deltaTime)
-    {
-      MessBlocks.Update(deltaTime);
-      foreach (var block in MessBlocks.GetShouldDropBlocks())
-      {
-        BoardState.Set(block.ExpectedPosition.x, block.ExpectedPosition.y, block.Block);
-        MessBlocks.Confirm(block);
-      }
-
-      if (MessBlocks.IsEmpty()) MessBlocks = null;
     }
 
     private void HandleFastFall()
@@ -89,9 +74,9 @@ namespace Code.Board
       {
         var penalty = _scoreboard.TryContribute(cleaningResult.Poofs);
         Debug.Log($"penalty: {penalty}");
-        MessBlocks = _fallingBlockGenerator.Mess(penalty,
+        var messBlocks = _fallingBlockGenerator.Mess(penalty,
           new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
-        
+        if (penalty > 0) MessFallEvent?.Invoke(messBlocks);
 
         if (!_scoreboard.IsComplete())
         {

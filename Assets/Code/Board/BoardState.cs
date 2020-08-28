@@ -7,7 +7,12 @@
     public BoardState(int height, int width)
     {
       _board = new Block[height, width];
+      Height = height;
+      Width = width;
     }
+
+    public readonly int Width;
+    public readonly int Height;
 
     public BoardState(Block[,] board)
     {

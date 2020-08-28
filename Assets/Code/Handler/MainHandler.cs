@@ -10,6 +10,7 @@ namespace Code.Handler
     private const float Scale = 0.8f;
 
     private GameLogic _game;
+    private MessFallLogic _messFall;
     private BoardState _board;
     private SpriteRenderer[,] _renderBoard;
     private Dictionary<Block, Sprite> _spriteMapping;
@@ -39,8 +40,11 @@ namespace Code.Handler
       };
 
       _scoreboard = new Scoreboard(levelObjectives);
-      _game = new GameLogic(BoardHeight, BoardWidth, BlockCount, _scoreboard);
-      _board = _game.BoardState;
+      _board = new BoardState(BoardHeight, BoardWidth);
+      _messFall = new MessFallLogic(_board);
+      _game = new GameLogic(_board, BlockCount, _scoreboard);
+      _game.MessFallEvent += _messFall.Process;
+      _game.MessFallEvent += InstantiateMess;
       _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
       for (var x = 0; x < BoardWidth; x++)
       {
@@ -91,11 +95,11 @@ namespace Code.Handler
 
       try
       {
-        _game.Update(Time.deltaTime);
+        if(_messFall.IsActive()) _messFall.Update(Time.deltaTime);
+        else _game.Update(Time.deltaTime);
       }
       catch (BoardCleaningEvent e)
       {
-        if (_game.MessBlocks != null) InstantiateMess();
         _cleaningResult = e.CleaningResult;
         _fallingBlockRotatingRenderer.sprite = null;
         _fallingBlockStaticRenderer.sprite = null;
@@ -138,10 +142,9 @@ namespace Code.Handler
       RenderFallingBlock();
     }
 
-    private void InstantiateMess()
+    private void InstantiateMess(MessBlocks messBlocks)
     {
-      var messBlocks = _game.MessBlocks.Blocks;
-      foreach (var messBlock in messBlocks)
+      foreach (var messBlock in messBlocks.Blocks)
       {
         var instantiate = Instantiate(messBlockPrefab);
         var handler = instantiate.GetComponent<MessHandler>();
