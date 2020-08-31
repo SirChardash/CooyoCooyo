@@ -373,6 +373,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1384689503}
   - component: {fileID: 1384689502}
+  - component: {fileID: 1384689504}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -394,8 +395,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 1789982828500731556, guid: 9b8c74b186a3e8148a5669d32e3604ba,
     type: 3}
-  messBlockPrefab: {fileID: 7748416945651947457, guid: 59f0a3632f0ba2e48b246156ff6a05c0,
-    type: 3}
 --- !u!4 &1384689503
 Transform:
   m_ObjectHideFlags: 0
@@ -410,6 +409,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1384689504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384689501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 614a01d0dadb487485d62ac3101264ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  messBlockPrefab: {fileID: 7748416945651947457, guid: 59f0a3632f0ba2e48b246156ff6a05c0,
+    type: 3}
 --- !u!1 &1691516823
 GameObject:
   m_ObjectHideFlags: 0

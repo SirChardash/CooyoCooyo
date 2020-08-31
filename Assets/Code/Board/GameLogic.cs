@@ -3,8 +3,6 @@ using UnityEngine;
 
 namespace Code.Board
 {
-  public delegate void MessFallEvent(MessBlocks messBlocks);
-
   public class GameLogic
   {
     public readonly BoardState BoardState;
@@ -13,8 +11,6 @@ namespace Code.Board
     private readonly BoardCleaner _cleaner;
     private readonly int _boardWidth;
     private readonly Scoreboard _scoreboard;
-
-    public event MessFallEvent MessFallEvent;
 
     public GameLogic(BoardState boardState, int blockCount, Scoreboard scoreboard)
     {
@@ -73,10 +69,10 @@ namespace Code.Board
       if (cleaningResult.AnythingHappened())
       {
         var penalty = _scoreboard.TryContribute(cleaningResult.Poofs);
-        Debug.Log($"penalty: {penalty}");
         var messBlocks = _fallingBlockGenerator.Mess(penalty,
           new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
-        if (penalty > 0) MessFallEvent?.Invoke(messBlocks);
+        cleaningResult.Penalty = penalty;
+        if (penalty > 0) Game.InvokeMessFallEvent(messBlocks);
 
         if (!_scoreboard.IsComplete())
         {

@@ -6,7 +6,7 @@ namespace Code.Board
   {
     public readonly List<Block[,]> BoardStates;
     public readonly List<Poof> Poofs;
-    
+    public int Penalty;
     
     public CleaningResult(List<Block[,]> boardStates, List<Poof> poofs)
     {

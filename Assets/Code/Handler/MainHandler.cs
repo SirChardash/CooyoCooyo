@@ -10,7 +10,6 @@ namespace Code.Handler
     private const float Scale = 0.8f;
 
     private GameLogic _game;
-    private MessFallLogic _messFall;
     private BoardState _board;
     private SpriteRenderer[,] _renderBoard;
     private Dictionary<Block, Sprite> _spriteMapping;
@@ -18,7 +17,6 @@ namespace Code.Handler
     private readonly SpriteRenderer[,] _renderObjectives = new SpriteRenderer[5, 5];
 
     public GameObject blockPrefab;
-    public GameObject messBlockPrefab;
     private SpriteRenderer _fallingBlockStaticRenderer;
     private SpriteRenderer _fallingBlockRotatingRenderer;
     private Transform _fallingBlockStaticTransform;
@@ -40,11 +38,8 @@ namespace Code.Handler
       };
 
       _scoreboard = new Scoreboard(levelObjectives);
-      _board = new BoardState(BoardHeight, BoardWidth);
-      _messFall = new MessFallLogic(_board);
+      _board = Game.Board;
       _game = new GameLogic(_board, BlockCount, _scoreboard);
-      _game.MessFallEvent += _messFall.Process;
-      _game.MessFallEvent += InstantiateMess;
       _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
       for (var x = 0; x < BoardWidth; x++)
       {
@@ -74,15 +69,7 @@ namespace Code.Handler
         }
       }
 
-      _spriteMapping = new Dictionary<Block, Sprite>
-      {
-        {Block.Block1, Resources.Load("Images/Apple_01", typeof(Sprite)) as Sprite},
-        {Block.Block2, Resources.Load("Images/Cauliflower_01", typeof(Sprite)) as Sprite},
-        {Block.Block3, Resources.Load("Images/Radish_01", typeof(Sprite)) as Sprite},
-        {Block.Block4, Resources.Load("Images/Red_current_01", typeof(Sprite)) as Sprite},
-        {Block.Poof1, Resources.Load("Images/SpellBook03_02", typeof(Sprite)) as Sprite},
-        {Block.Mess, Resources.Load("Images/SpellBook03_103", typeof(Sprite)) as Sprite},
-      };
+      _spriteMapping = Game.SpriteMapping;
     }
 
     void Update()
@@ -95,11 +82,11 @@ namespace Code.Handler
 
       try
       {
-        if(_messFall.IsActive()) _messFall.Update(Time.deltaTime);
-        else _game.Update(Time.deltaTime);
+        if (Game.State != Game.GameState.MessFalling) _game.Update(Time.deltaTime);
       }
       catch (BoardCleaningEvent e)
       {
+        Game.State = Game.GameState.CleanResolution;
         _cleaningResult = e.CleaningResult;
         _fallingBlockRotatingRenderer.sprite = null;
         _fallingBlockStaticRenderer.sprite = null;
@@ -120,8 +107,12 @@ namespace Code.Handler
       {
         _board.Set(_cleaningResult.BoardStates[0]);
         _cleaningResult.BoardStates.RemoveAt(0);
-        _cleaningResult = _cleaningResult.BoardStates.Count > 0 ? _cleaningResult : null;
         _slideProgress -= SlideDuration;
+        if (_cleaningResult.BoardStates.Count == 0)
+        {
+          Game.State = _cleaningResult.Penalty > 0 ? Game.GameState.MessFalling : Game.GameState.BlockFalling;
+          _cleaningResult = null;
+        }
       }
     }
 
@@ -142,17 +133,7 @@ namespace Code.Handler
       RenderFallingBlock();
     }
 
-    private void InstantiateMess(MessBlocks messBlocks)
-    {
-      foreach (var messBlock in messBlocks.Blocks)
-      {
-        var instantiate = Instantiate(messBlockPrefab);
-        var handler = instantiate.GetComponent<MessHandler>();
-        handler.sprite = _spriteMapping[messBlock.Block];
-        handler.messBlock = messBlock;
-      }
-    }
-    
+
     private void RenderFallingBlock()
     {
       var fallingBlock = _game.FallingBlock;

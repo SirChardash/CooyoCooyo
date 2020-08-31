@@ -3,24 +3,24 @@
   public class MessFallLogic
   {
 
-    private BoardState _board;
+    private readonly BoardState _board;
     public MessBlocks MessBlocks;
     
     public MessFallLogic(BoardState board)
     {
       _board = board;
     }
+
+    public bool IsDone()
+    {
+      return MessBlocks.IsEmpty();
+    }
     
-    public void Process(MessBlocks messBlocks)
+    public void Accept(MessBlocks messBlocks)
     {
       MessBlocks = messBlocks;
     }
 
-    public bool IsActive()
-    {
-      return MessBlocks != null;
-    }
-    
     public void Update(float deltaTime)
     {
       MessBlocks.Update(deltaTime);
@@ -29,8 +29,6 @@
         _board.Set(block.ExpectedPosition.x, block.ExpectedPosition.y, block.Block);
         MessBlocks.Confirm(block);
       }
-
-      if (MessBlocks.IsEmpty()) MessBlocks = null;
     }
   }
 }
