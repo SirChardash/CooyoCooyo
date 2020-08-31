@@ -74,18 +74,6 @@ namespace Code.Board
         cleaningResult.Penalty = penalty;
         if (penalty > 0) Game.InvokeMessFallEvent(messBlocks);
 
-        if (!_scoreboard.IsComplete())
-        {
-          var objectiveString = "";
-
-          foreach (var keyValuePair in _scoreboard.GetCurrentObjective().Objectives)
-          {
-            objectiveString += $"{keyValuePair.Key}:{keyValuePair.Value}#";
-          }
-
-          Debug.Log(objectiveString);
-        }
-
         throw new BoardCleaningEvent {CleaningResult = cleaningResult};
       }
     }
