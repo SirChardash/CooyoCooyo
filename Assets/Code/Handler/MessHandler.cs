@@ -7,28 +7,34 @@ namespace Code.Handler
   {
     private const float Scale = 0.8f;
     
-    public MessBlocks.MessBlock messBlock;
-    public Sprite sprite;
+    private MessBlocks.MessBlock _messBlock;
+    private Sprite _sprite;
     private Transform _transform;
 
+    public void SetRequired(MessBlocks.MessBlock messBlock, Sprite sprite)
+    {
+      _messBlock = messBlock;
+      _sprite = sprite;
+    }
+    
     private void Start()
     {
-      GetComponent<SpriteRenderer>().sprite = sprite;
+      GetComponent<SpriteRenderer>().sprite = _sprite;
       _transform = GetComponent<Transform>();
-      _transform.position = GetBoardCoordinates(messBlock.ExpectedPosition.x, 1);
+      _transform.position = GetBoardCoordinates(_messBlock.ExpectedPosition.x, 1);
     }
 
     private void Update()
     {
-      if (messBlock.ShouldDrop()) Destroy(gameObject);
+      if (_messBlock.ShouldDrop()) Destroy(gameObject);
     }
 
     private void OnGUI()
     {
       _transform.position = Vector2.Lerp(GetBoardCoordinates(
-          messBlock.ExpectedPosition.x, 1),
-        GetBoardCoordinates(messBlock.ExpectedPosition.x, messBlock.ExpectedPosition.y), t:
-        messBlock.GetBlockProgress() * messBlock.GetBlockProgress()
+          _messBlock.ExpectedPosition.x, 1),
+        GetBoardCoordinates(_messBlock.ExpectedPosition.x, _messBlock.ExpectedPosition.y), t:
+        _messBlock.GetBlockProgress() * _messBlock.GetBlockProgress()
       );
     }
     

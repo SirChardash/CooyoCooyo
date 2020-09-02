@@ -14,6 +14,8 @@ namespace Code.Handler
       _messFall = new MessFallLogic(Game.Board);
       Game.MessFallEvent += InstantiateMess;
       Game.MessFallEvent += _messFall.Accept;
+      Game.MessFallEvent += Resume;
+      enabled = false;
     }
 
     private void Update()
@@ -21,7 +23,11 @@ namespace Code.Handler
       if (Game.State == Game.GameState.MessFalling)
       {
         _messFall.Update(Time.deltaTime);
-        if (_messFall.IsDone()) Game.State = Game.GameState.BlockFalling;
+        if (_messFall.IsDone())
+        {
+          Game.State = Game.GameState.BlockFalling;
+          enabled = false;
+        }
       }
     }
 
@@ -31,9 +37,13 @@ namespace Code.Handler
       {
         var instantiate = Instantiate(messBlockPrefab);
         var handler = instantiate.GetComponent<MessHandler>();
-        handler.sprite = Game.SpriteMapping[messBlock.Block];
-        handler.messBlock = messBlock;
+        handler.SetRequired(messBlock, Game.SpriteMapping[messBlock.Block]);
       }
+    }
+    
+    private void Resume(MessBlocks messBlocks)
+    {
+      enabled = true;
     }
     
   }
