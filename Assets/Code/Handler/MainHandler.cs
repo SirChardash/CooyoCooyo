@@ -13,8 +13,6 @@ namespace Code.Handler
     private BoardState _board;
     private SpriteRenderer[,] _renderBoard;
     private Dictionary<Block, Sprite> _spriteMapping;
-    private Scoreboard _scoreboard;
-    private readonly SpriteRenderer[,] _renderObjectives = new SpriteRenderer[5, 5];
 
     public GameObject blockPrefab;
     private SpriteRenderer _fallingBlockStaticRenderer;
@@ -31,15 +29,8 @@ namespace Code.Handler
 
     void Start()
     {
-      var levelObjectives = new List<LevelObjective>
-      {
-        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}, {Block.Block2, 3}, {Block.Block3, 1}}),
-        new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}})
-      };
-
-      _scoreboard = new Scoreboard(levelObjectives);
       _board = Game.Board;
-      _game = new GameLogic(_board, BlockCount, _scoreboard);
+      _game = new GameLogic(_board);
       _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
       for (var x = 0; x < BoardWidth; x++)
       {
@@ -58,18 +49,9 @@ namespace Code.Handler
       _fallingBlockStaticTransform = staticBlock.transform;
       _fallingBlockRotatingTransform = rotatingBlock.transform;
 
-      var scoreboardPosition = new Vector2(Scale * 4, Scale * 2);
-      for (var x = 0; x < 5; x++)
-      {
-        for (var y = 0; y < 5; y++)
-        {
-          var block = Instantiate(blockPrefab);
-          block.transform.position = new Vector2(scoreboardPosition.x + Scale * x, scoreboardPosition.y + Scale * y);
-          _renderObjectives[y, x] = block.GetComponent<SpriteRenderer>();
-        }
-      }
-
       _spriteMapping = Game.SpriteMapping;
+
+      Game.LevelEndEvent += () => Destroy(this);
     }
 
     void Update()
@@ -118,8 +100,6 @@ namespace Code.Handler
 
     private void OnGUI()
     {
-      RenderScoreboard();
-
       for (var x = 0; x < BoardWidth; x++)
       {
         for (var y = 0; y < BoardHeight; y++)
@@ -173,29 +153,6 @@ namespace Code.Handler
           ? animationProgress
           : 0;
       return Vector2.Lerp(startPos, endPos, t: trueProgress);
-    }
-
-    private void RenderScoreboard()
-    {
-      for (var i = 0; i < 5; i++)
-      {
-        for (var j = 0; j < 5; j++)
-        {
-          _renderObjectives[i, j].sprite = null;
-        }
-      }
-
-      var row = 0;
-      if (_scoreboard.GetCurrentObjective() == null) return;
-      foreach (var objective in _scoreboard.GetCurrentObjective().Objectives)
-      {
-        for (var i = 0; i < objective.Value; i++)
-        {
-          _renderObjectives[i, row].sprite = _spriteMapping[objective.Key];
-        }
-
-        row++;
-      }
     }
 
     private static Vector2 GetBoardCoordinates(int x, int y)

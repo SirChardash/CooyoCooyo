@@ -10,25 +10,21 @@ namespace Code.Board
     public FallingBlock FallingBlock;
     private readonly BoardCleaner _cleaner;
     private readonly int _boardWidth;
-    private readonly Scoreboard _scoreboard;
 
-    public GameLogic(BoardState boardState, int blockCount, Scoreboard scoreboard)
+    public GameLogic(BoardState boardState)
     {
       BoardState = boardState;
       _boardWidth = boardState.Width;
-      _fallingBlockGenerator = new FallingBlockGenerator(blockCount, boardState.Width);
+      _fallingBlockGenerator = Game.FallingBlockGenerator;
       FallingBlock = _fallingBlockGenerator.Next();
       _cleaner = new BoardCleaner(boardState.Height, boardState.Width);
-      _scoreboard = scoreboard;
     }
 
     public void Update(float deltaTime)
     {
-      if (_scoreboard.IsComplete()) End(true);
-
       for (var x = 0; x < _boardWidth; x++)
       {
-        if (!BoardState.IsEmpty(x, 0)) End(false);
+        if (!BoardState.IsEmpty(x, 0)) End();
       }
 
       if ((!BoardState.IsEmpty(FallingBlock.StaticBlock.x, FallingBlock.StaticBlock.y + 1)
@@ -68,19 +64,14 @@ namespace Code.Board
       var cleaningResult = _cleaner.TryClean(BoardState);
       if (cleaningResult.AnythingHappened())
       {
-        var penalty = _scoreboard.TryContribute(cleaningResult.Poofs);
-        var messBlocks = _fallingBlockGenerator.Mess(penalty,
-          new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
-        cleaningResult.Penalty = penalty;
-        if (penalty > 0) Game.InvokeMessFallEvent(messBlocks);
-
+        Game.InvokeBlockClearEvent(cleaningResult);
         throw new BoardCleaningEvent {CleaningResult = cleaningResult};
       }
     }
 
-    private static void End(bool positive)
+    private static void End()
     {
-      Debug.Log(positive ? "level finished" : "game ended");
+      Debug.Log("game ended");
       throw new GameEndEvent();
     }
   }

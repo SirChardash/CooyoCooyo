@@ -6,7 +6,9 @@ namespace Code.Board
   public delegate void MessFallEvent(MessBlocks messBlocks);
 
   public delegate void BlockClearEvent(CleaningResult cleaningResult);
-  
+
+  public delegate void LevelEndEvent();
+
   public class Game
   {
     private const int BoardHeight = 10;
@@ -15,6 +17,7 @@ namespace Code.Board
 
     public static GameState State = GameState.BlockFalling;
     public static readonly BoardState Board = new BoardState(BoardHeight, BoardWidth);
+    public static readonly FallingBlockGenerator FallingBlockGenerator = new FallingBlockGenerator(BlockCount, BoardWidth);
 
     public static readonly Dictionary<Block, Sprite> SpriteMapping = new Dictionary<Block, Sprite>
     {
@@ -29,15 +32,21 @@ namespace Code.Board
 
     public static event MessFallEvent MessFallEvent;
     public static event BlockClearEvent BlockClearEvent;
+    public static event LevelEndEvent LevelEndEvent;
 
     public static void InvokeMessFallEvent(MessBlocks messBlocks)
     {
       MessFallEvent?.Invoke(messBlocks);
     }
-    
+
     public static void InvokeBlockClearEvent(CleaningResult cleaningResult)
     {
       BlockClearEvent?.Invoke(cleaningResult);
+    }
+    
+    public static void InvokeLevelEndEvent()
+    {
+      LevelEndEvent?.Invoke();
     }
 
     public enum GameState
