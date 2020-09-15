@@ -37,7 +37,7 @@ namespace Code.Handler
         }
       }
 
-      Game.BlockClearEvent += UpdateScoreboard;
+      Game.BlockClear += UpdateScoreboard;
       DrawObjectives();
     }
 
@@ -47,7 +47,7 @@ namespace Code.Handler
       var messBlocks = _fallingBlockGenerator.Mess(penalty,
         new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
       cleaningResult.Penalty = penalty;
-      if (penalty > 0) Game.InvokeMessFallEvent(messBlocks);
+      if (penalty > 0) Game.InvokeMessFall(messBlocks);
       DrawObjectives();
       
       if (_scoreboard.IsComplete()) End();
@@ -78,7 +78,7 @@ namespace Code.Handler
 
     private void End()
     {
-      Game.InvokeLevelEndEvent();
+      Game.InvokeLevelEnd();
       Debug.Log("objectives complete");
       Destroy(controller);
     }

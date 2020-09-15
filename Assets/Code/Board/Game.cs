@@ -30,23 +30,23 @@ namespace Code.Board
     };
 
 
-    public static event MessFallEvent MessFallEvent;
-    public static event BlockClearEvent BlockClearEvent;
-    public static event LevelEndEvent LevelEndEvent;
+    public static event MessFallEvent MessFall;
+    public static event BlockClearEvent BlockClear;
+    public static event LevelEndEvent LevelEnd;
 
-    public static void InvokeMessFallEvent(MessBlocks messBlocks)
+    public static void InvokeMessFall(MessBlocks messBlocks)
     {
-      MessFallEvent?.Invoke(messBlocks);
+      MessFall?.Invoke(messBlocks);
     }
 
-    public static void InvokeBlockClearEvent(CleaningResult cleaningResult)
+    public static void InvokeBlockClear(CleaningResult cleaningResult)
     {
-      BlockClearEvent?.Invoke(cleaningResult);
+      BlockClear?.Invoke(cleaningResult);
     }
     
-    public static void InvokeLevelEndEvent()
+    public static void InvokeLevelEnd()
     {
-      LevelEndEvent?.Invoke();
+      LevelEnd?.Invoke();
     }
 
     public enum GameState

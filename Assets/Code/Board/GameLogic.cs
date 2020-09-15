@@ -64,7 +64,7 @@ namespace Code.Board
       var cleaningResult = _cleaner.TryClean(BoardState);
       if (cleaningResult.AnythingHappened())
       {
-        Game.InvokeBlockClearEvent(cleaningResult);
+        Game.InvokeBlockClear(cleaningResult);
         throw new BoardCleaningEvent {CleaningResult = cleaningResult};
       }
     }

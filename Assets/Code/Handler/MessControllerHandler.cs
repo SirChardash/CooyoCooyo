@@ -12,9 +12,9 @@ namespace Code.Handler
     private void Start()
     {
       _messFall = new MessFallLogic(Game.Board);
-      Game.MessFallEvent += InstantiateMess;
-      Game.MessFallEvent += _messFall.Accept;
-      Game.MessFallEvent += Resume;
+      Game.MessFall += InstantiateMess;
+      Game.MessFall += _messFall.Accept;
+      Game.MessFall += Resume;
       enabled = false;
     }
 

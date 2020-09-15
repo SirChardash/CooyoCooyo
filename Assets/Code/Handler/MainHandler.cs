@@ -51,7 +51,7 @@ namespace Code.Handler
 
       _spriteMapping = Game.SpriteMapping;
 
-      Game.LevelEndEvent += () => Destroy(this);
+      Game.LevelEnd += () => Destroy(this);
     }
 
     void Update()
