@@ -26,6 +26,7 @@ namespace Code.Handler
     private const int BlockCount = 4;
 
     private CleaningResult _cleaningResult;
+    private List<Block[,]> _animationStates;
 
     void Start()
     {
@@ -70,6 +71,7 @@ namespace Code.Handler
       {
         Game.State = Game.GameState.CleanResolution;
         _cleaningResult = e.CleaningResult;
+        _animationStates = new List<Block[,]>(_cleaningResult.BoardStates);
         _fallingBlockRotatingRenderer.sprite = null;
         _fallingBlockStaticRenderer.sprite = null;
       }
@@ -87,12 +89,14 @@ namespace Code.Handler
       _slideProgress += deltaTime;
       if (_slideProgress >= SlideDuration)
       {
-        _board.Set(_cleaningResult.BoardStates[0]);
-        _cleaningResult.BoardStates.RemoveAt(0);
+        _board.Set(_animationStates[0]);
+        _animationStates.RemoveAt(0);
         _slideProgress -= SlideDuration;
-        if (_cleaningResult.BoardStates.Count == 0)
+        if (_animationStates.Count == 0)
         {
           Game.State = _cleaningResult.Penalty > 0 ? Game.GameState.MessFalling : Game.GameState.BlockFalling;
+          Game.InvokeBlockClear(_cleaningResult);
+          _animationStates = null;
           _cleaningResult = null;
         }
       }

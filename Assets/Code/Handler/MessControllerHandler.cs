@@ -43,6 +43,7 @@ namespace Code.Handler
     
     private void Resume(MessBlocks messBlocks)
     {
+      Game.State = Game.GameState.MessFalling;
       enabled = true;
     }
     
