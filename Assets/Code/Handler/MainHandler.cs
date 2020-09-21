@@ -21,21 +21,22 @@ namespace Code.Handler
     private Transform _fallingBlockRotatingTransform;
 
 
-    private const int BoardHeight = 10;
-    private const int BoardWidth = 6;
-    private const int BlockCount = 4;
+    private int _boardHeight;
+    private int _boardWidth;
 
     private CleaningResult _cleaningResult;
     private List<Block[,]> _animationStates;
 
     void Start()
     {
+      _boardHeight = Game.BoardHeight;
+      _boardWidth = Game.BoardWidth;
       _board = Game.Board;
       _game = new GameLogic(_board);
-      _renderBoard = new SpriteRenderer[BoardHeight, BoardWidth];
-      for (var x = 0; x < BoardWidth; x++)
+      _renderBoard = new SpriteRenderer[_boardHeight, _boardWidth];
+      for (var x = 0; x < _boardWidth; x++)
       {
-        for (var y = 0; y < BoardHeight; y++)
+        for (var y = 0; y < _boardHeight; y++)
         {
           var block = Instantiate(blockPrefab);
           block.transform.position = GetBoardCoordinates(x, y);
@@ -75,10 +76,6 @@ namespace Code.Handler
         _fallingBlockRotatingRenderer.sprite = null;
         _fallingBlockStaticRenderer.sprite = null;
       }
-      catch (GameEndEvent)
-      {
-        Destroy(this);
-      }
     }
 
     private const float SlideDuration = 0.45f;
@@ -104,9 +101,9 @@ namespace Code.Handler
 
     private void OnGUI()
     {
-      for (var x = 0; x < BoardWidth; x++)
+      for (var x = 0; x < _boardWidth; x++)
       {
-        for (var y = 0; y < BoardHeight; y++)
+        for (var y = 0; y < _boardHeight; y++)
         {
           _renderBoard[y, x].sprite = _board.Get(x, y) != 0 ? _spriteMapping[_board.Get(x, y)] : null;
         }

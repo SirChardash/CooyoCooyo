@@ -9,13 +9,20 @@ namespace Code.Board
 
     private bool _fallFast;
 
-    // todo: make blocks always fall somewhat on centre
-    public Vector2Int StaticBlock = new Vector2Int(3, 1);
-    public Vector2Int RotatingBlock = new Vector2Int(3, 0);
-    public Block StaticCode;
-    public Block RotatingCode;
+    public Vector2Int StaticBlock;
+    public Vector2Int RotatingBlock;
+    public readonly Block StaticCode;
+    public readonly Block RotatingCode;
     public BlockOrientation Orientation = BlockOrientation.Up;
 
+    public FallingBlock(Block staticCode, Block rotatingCode, int x)
+    {
+      StaticBlock = new Vector2Int(x, 1);
+      RotatingBlock = new Vector2Int(x, 0);
+      StaticCode = staticCode;
+      RotatingCode = rotatingCode;
+    }
+    
     public void Update(float deltaTime, BoardState boardState)
     {
       if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);

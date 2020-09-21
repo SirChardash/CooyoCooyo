@@ -9,20 +9,22 @@ namespace Code.Board
     private readonly Random _random = new Random();
     private readonly int _blockCount;
     private readonly int _boardWidth;
+    public readonly int StartingX;
 
     public FallingBlockGenerator(int blockCount, int boardWidth)
     {
       _blockCount = blockCount;
       _boardWidth = boardWidth;
+      StartingX = _boardWidth / 2 - (_boardWidth % 2 == 0 ? 1 : 0);
     }
 
     public FallingBlock Next()
     {
-      return new FallingBlock
-      {
-        StaticCode = (Block) (_random.Next(_blockCount) + 1),
-        RotatingCode = (Block) (_random.Next(_blockCount) + 1)
-      };
+      return new FallingBlock(
+        (Block) (_random.Next(_blockCount) + 1),
+        (Block) (_random.Next(_blockCount) + 1),
+        StartingX
+      );
     }
 
     public MessBlocks Mess(int penalty, BoardState board)

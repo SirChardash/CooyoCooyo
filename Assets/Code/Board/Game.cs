@@ -11,8 +11,8 @@ namespace Code.Board
 
   public class Game
   {
-    private const int BoardHeight = 10;
-    private const int BoardWidth = 6;
+    public const int BoardHeight = 10;
+    public const int BoardWidth = 6;
     private const int BlockCount = 4;
 
     public static GameState State = GameState.BlockFalling;
