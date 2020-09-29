@@ -6,8 +6,6 @@ namespace Code.Handler
 {
   public class ScoreboardHandler : MonoBehaviour
   {
-    private const float Scale = 0.8f;
-
     private Scoreboard _scoreboard;
     private readonly SpriteRenderer[,] _renderObjectives = new SpriteRenderer[5, 5];
     private Dictionary<Block, Sprite> _spriteMapping;
@@ -32,7 +30,7 @@ namespace Code.Handler
         for (var y = 0; y < 5; y++)
         {
           var block = Instantiate(blockPrefab);
-          block.transform.position = new Vector2(basePosition.x + Scale * x, basePosition.y + Scale * y);
+          block.transform.position = new Vector2(basePosition.x + Config.Scale * x, basePosition.y + Config.Scale * y);
           _renderObjectives[y, x] = block.GetComponent<SpriteRenderer>();
         }
       }

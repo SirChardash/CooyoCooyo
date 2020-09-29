@@ -1,12 +1,11 @@
 ﻿using Code.Board;
+using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
 {
   public class MessHandler : MonoBehaviour
   {
-    private const float Scale = 0.8f;
-    
     private MessBlocks.MessBlock _messBlock;
     private Sprite _sprite;
     private Transform _transform;
@@ -21,7 +20,7 @@ namespace Code.Handler
     {
       GetComponent<SpriteRenderer>().sprite = _sprite;
       _transform = GetComponent<Transform>();
-      _transform.position = GetBoardCoordinates(_messBlock.ExpectedPosition.x, 1);
+      _transform.position = BoardUtils.GetBoardCoordinates(_messBlock.ExpectedPosition.x, 1);
     }
 
     private void Update()
@@ -31,16 +30,12 @@ namespace Code.Handler
 
     private void OnGUI()
     {
-      _transform.position = Vector2.Lerp(GetBoardCoordinates(
+      _transform.position = Vector2.Lerp(BoardUtils.GetBoardCoordinates(
           _messBlock.ExpectedPosition.x, 1),
-        GetBoardCoordinates(_messBlock.ExpectedPosition.x, _messBlock.ExpectedPosition.y), t:
+        BoardUtils.GetBoardCoordinates(_messBlock.ExpectedPosition.x, _messBlock.ExpectedPosition.y), t:
         _messBlock.GetBlockProgress() * _messBlock.GetBlockProgress()
       );
     }
     
-    private static Vector2 GetBoardCoordinates(int x, int y)
-    {
-      return new Vector2(Scale * (x - 4), Scale * (5 - y));
-    }
   }
 }

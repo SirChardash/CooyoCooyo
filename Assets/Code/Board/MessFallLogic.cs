@@ -4,7 +4,7 @@
   {
 
     private readonly BoardState _board;
-    public MessBlocks MessBlocks;
+    private MessBlocks _messBlocks;
     
     public MessFallLogic(BoardState board)
     {
@@ -13,21 +13,21 @@
 
     public bool IsDone()
     {
-      return MessBlocks.IsEmpty();
+      return _messBlocks.IsEmpty();
     }
     
     public void Accept(MessBlocks messBlocks)
     {
-      MessBlocks = messBlocks;
+      _messBlocks = messBlocks;
     }
 
     public void Update(float deltaTime)
     {
-      MessBlocks.Update(deltaTime);
-      foreach (var block in MessBlocks.GetShouldDropBlocks())
+      _messBlocks.Update(deltaTime);
+      foreach (var block in _messBlocks.GetShouldDropBlocks())
       {
         _board.Set(block.ExpectedPosition.x, block.ExpectedPosition.y, block.Block);
-        MessBlocks.Confirm(block);
+        _messBlocks.Confirm(block);
       }
     }
   }

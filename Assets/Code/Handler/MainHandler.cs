@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using Code.Board;
+using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
 {
   public class MainHandler : MonoBehaviour
   {
-    private const float Scale = 0.8f;
-
     private GameLogic _game;
     private BoardState _board;
     private SpriteRenderer[,] _renderBoard;
@@ -33,7 +32,7 @@ namespace Code.Handler
         for (var y = 0; y < _boardHeight; y++)
         {
           var block = Instantiate(blockPrefab);
-          block.transform.position = GetBoardCoordinates(x, y);
+          block.transform.position = BoardUtils.GetBoardCoordinates(x, y);
           _renderBoard[y, x] = block.GetComponent<SpriteRenderer>();
         }
       }
@@ -93,12 +92,6 @@ namespace Code.Handler
           _renderBoard[y, x].sprite = _board.Get(x, y) != 0 ? _spriteMapping[_board.Get(x, y)] : null;
         }
       }
-    }
-
-
-    private static Vector2 GetBoardCoordinates(int x, int y)
-    {
-      return new Vector2(Scale * (x - 4), Scale * (5 - y));
     }
   }
 }

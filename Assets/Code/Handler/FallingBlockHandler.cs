@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Code.Board;
+using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
@@ -7,7 +8,6 @@ namespace Code.Handler
   public class FallingBlockHandler : MonoBehaviour
   {
     private readonly Vector2Int _oneDown = new Vector2Int(0, 1);
-    private const float Scale = 0.8f;
 
     public Transform staticBlockTransform;
     public Transform rotatingBlockTransform;
@@ -24,7 +24,7 @@ namespace Code.Handler
       _fallingBlock = fallingBlock;
       _board = Game.Board;
       _spriteMapping = Game.SpriteMapping;
-      staticBlockTransform.position = GetBoardCoordinates(_fallingBlock.StaticBlock);
+      staticBlockTransform.position = BoardUtils.GetBoardCoordinates(_fallingBlock.StaticBlock);
     }
 
     private void Update()
@@ -76,8 +76,8 @@ namespace Code.Handler
     {
       var animationProgress = fallingProgress * fallingProgress;
 
-      var startPos = GetBoardCoordinates(block);
-      var endPos = GetBoardCoordinates(block + _oneDown);
+      var startPos = BoardUtils.GetBoardCoordinates(block);
+      var endPos = BoardUtils.GetBoardCoordinates(block + _oneDown);
       var trueProgress =
         _board.IsEmpty(block.x, block.y + 1) &&
         (!topFallingBlock || (_board.IsEmpty(block.x, block.y + 2)))
@@ -96,11 +96,6 @@ namespace Code.Handler
       }
 
       if (_fallingBlock.ShouldDrop()) _fallingBlock.DropDown();
-    }
-
-    private static Vector2 GetBoardCoordinates(Vector2Int pos)
-    {
-      return new Vector2(Scale * (pos.x - 4), Scale * (5 - pos.y));
     }
   }
 }
