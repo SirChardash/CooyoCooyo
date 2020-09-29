@@ -26,6 +26,7 @@ namespace Code.Handler
         if (_messFall.IsDone())
         {
           Game.State = Game.GameState.BlockFalling;
+          Game.InvokeBlockFallResolved();
           enabled = false;
         }
       }

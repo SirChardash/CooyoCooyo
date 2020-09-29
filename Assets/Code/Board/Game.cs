@@ -9,6 +9,13 @@ namespace Code.Board
 
   public delegate void LevelEndEvent();
 
+  public delegate void BlockFallResolved();
+
+  public delegate void BlockFallEvent(Vector2Int staticBlock, Vector2Int rotatingBlock, Block staticCode,
+    Block rotatingCode);
+
+  public delegate void PoofEvent(CleaningResult cleaningResult);
+
   public class Game
   {
     public const int BoardHeight = 10;
@@ -33,6 +40,9 @@ namespace Code.Board
     public static event MessFallEvent MessFall;
     public static event BlockClearEvent BlockClear;
     public static event LevelEndEvent LevelEnd;
+    public static event BlockFallResolved BlockFallResolved;
+    public static event BlockFallEvent BlockFall;
+    public static event PoofEvent Poof;
 
     public static void InvokeMessFall(MessBlocks messBlocks)
     {
@@ -43,10 +53,26 @@ namespace Code.Board
     {
       BlockClear?.Invoke(cleaningResult);
     }
-    
+
     public static void InvokeLevelEnd()
     {
       LevelEnd?.Invoke();
+    }
+
+    public static void InvokeBlockFallResolved()
+    {
+      BlockFallResolved?.Invoke();
+    }
+
+    public static void InvokeBlockFall(Vector2Int staticBlock, Vector2Int rotatingBlock, Block staticCode,
+      Block rotatingCode)
+    {
+      BlockFall?.Invoke(staticBlock, rotatingBlock, staticCode, rotatingCode);
+    }
+
+    public static void InvokePoof(CleaningResult cleaningResult)
+    {
+      Poof?.Invoke(cleaningResult);
     }
 
     public enum GameState
