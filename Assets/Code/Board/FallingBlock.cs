@@ -46,6 +46,19 @@ namespace Code.Board
       }
     }
 
+    public void DropDownStatic()
+    {
+      StaticBlock.y++;
+      _timeFalling -= _timeToFall;
+    }
+    
+    public void DropDownRotating()
+    {
+      RotatingBlock.y++;
+      _timeFalling -= _timeToFall;
+    }
+    
+
     public void DropDown()
     {
       StaticBlock.y++;

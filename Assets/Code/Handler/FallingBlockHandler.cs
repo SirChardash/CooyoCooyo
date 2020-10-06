@@ -18,6 +18,7 @@ namespace Code.Handler
     private BoardState _board;
     private Dictionary<Block, Sprite> _spriteMapping;
 
+    private bool _freeFall;
 
     public void SetRequired(FallingBlock fallingBlock)
     {
@@ -29,9 +30,39 @@ namespace Code.Handler
 
     private void Update()
     {
-      if ((!_board.IsEmpty(_fallingBlock.StaticBlock.x, _fallingBlock.StaticBlock.y + 1)
-           || !_board.IsEmpty(_fallingBlock.RotatingBlock.x, _fallingBlock.RotatingBlock.y + 1))
-          && _fallingBlock.ShouldDrop())
+      if (!_freeFall
+          && _fallingBlock.StaticBlock.x != _fallingBlock.RotatingBlock.x
+          && IsEmptyBelow(_fallingBlock.StaticBlock) != IsEmptyBelow(_fallingBlock.RotatingBlock))
+      {
+        _freeFall = true;
+        _fallingBlock.FallFast();
+      }
+
+      if (_freeFall)
+      {
+        _fallingBlock.Update(Time.deltaTime, _board);
+        if (_fallingBlock.ShouldDrop())
+        {
+          if (IsEmptyBelow(_fallingBlock.StaticBlock) && _fallingBlock.ShouldDrop())
+          {
+            _fallingBlock.DropDownStatic();
+          }
+          else
+          {
+            _fallingBlock.DropDownRotating();
+          }
+        }
+        
+        if (IsEmptyBelow(_fallingBlock.StaticBlock) || IsEmptyBelow(_fallingBlock.RotatingBlock))
+        {
+          return;
+        }
+      }
+
+      Debug.Log($"{!IsEmptyBelow(_fallingBlock.StaticBlock)}:{!IsEmptyBelow(_fallingBlock.RotatingBlock)}");
+      if ((!IsEmptyBelow(_fallingBlock.StaticBlock)
+           || !IsEmptyBelow(_fallingBlock.RotatingBlock))
+          && (_fallingBlock.ShouldDrop() || _freeFall))
       {
         Game.InvokeBlockFall(
           _fallingBlock.StaticBlock,
@@ -96,6 +127,11 @@ namespace Code.Handler
       }
 
       if (_fallingBlock.ShouldDrop()) _fallingBlock.DropDown();
+    }
+
+    private bool IsEmptyBelow(Vector2Int position)
+    {
+      return _board.IsEmpty(position.x, position.y + 1);
     }
   }
 }

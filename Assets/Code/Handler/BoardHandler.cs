@@ -86,11 +86,6 @@ namespace Code.Handler
     {
       var staticBlockY = staticBlock.y;
       var rotatingBlockY = rotatingBlock.y;
-      while (_board.IsEmpty(staticBlock.x, staticBlockY + 1)) staticBlockY++;
-      while (_board.IsEmpty(rotatingBlock.x, rotatingBlockY + 1)) rotatingBlockY++;
-
-      if (staticBlock.y < rotatingBlock.y) staticBlockY--;
-      else if (staticBlock.y > rotatingBlock.y) rotatingBlockY--;
 
       _board.Set(staticBlock.x, staticBlockY, staticCode);
       _board.Set(rotatingBlock.x, rotatingBlockY, rotatingCode);
