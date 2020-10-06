@@ -418,9 +418,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1384689503}
-  - component: {fileID: 1384689502}
   - component: {fileID: 1384689504}
   - component: {fileID: 1384689505}
+  - component: {fileID: 1384689502}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged

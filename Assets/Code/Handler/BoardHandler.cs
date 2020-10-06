@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Code.Handler
 {
-  public class MainHandler : MonoBehaviour
+  public class BoardHandler : MonoBehaviour
   {
-    private GameLogic _game;
     private BoardState _board;
+    private BoardCleaner _cleaner;
     private SpriteRenderer[,] _renderBoard;
     private Dictionary<Block, Sprite> _spriteMapping;
 
@@ -25,7 +25,7 @@ namespace Code.Handler
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
       _board = Game.Board;
-      _game = new GameLogic(_board);
+      _cleaner = new BoardCleaner(_board.Height, _board.Width);
       _renderBoard = new SpriteRenderer[_boardHeight, _boardWidth];
       for (var x = 0; x < _boardWidth; x++)
       {
@@ -41,6 +41,7 @@ namespace Code.Handler
 
       Game.LevelEnd += () => Destroy(this);
       Game.Poof += HandlePoof;
+      Game.BlockFall += HandleFallingBlockPlacement;
     }
 
     void Update()
@@ -48,10 +49,7 @@ namespace Code.Handler
       if (_cleaningResult != null)
       {
         HandleCleaningAnimation(Time.deltaTime);
-        return;
       }
-
-      if (Game.State != Game.GameState.MessFalling) _game.Update(Time.deltaTime);
     }
 
     private void HandlePoof(CleaningResult cleaningResult)
@@ -80,6 +78,31 @@ namespace Code.Handler
           _animationStates = null;
           _cleaningResult = null;
         }
+      }
+    }
+    
+    private void HandleFallingBlockPlacement(Vector2Int staticBlock, Vector2Int rotatingBlock, Block staticCode,
+      Block rotatingCode)
+    {
+      var staticBlockY = staticBlock.y;
+      var rotatingBlockY = rotatingBlock.y;
+      while (_board.IsEmpty(staticBlock.x, staticBlockY + 1)) staticBlockY++;
+      while (_board.IsEmpty(rotatingBlock.x, rotatingBlockY + 1)) rotatingBlockY++;
+
+      if (staticBlock.y < rotatingBlock.y) staticBlockY--;
+      else if (staticBlock.y > rotatingBlock.y) rotatingBlockY--;
+
+      _board.Set(staticBlock.x, staticBlockY, staticCode);
+      _board.Set(rotatingBlock.x, rotatingBlockY, rotatingCode);
+
+      var cleaningResult = _cleaner.TryClean(_board);
+      if (cleaningResult.AnythingHappened())
+      {
+        Game.InvokePoof(cleaningResult);
+      }
+      else
+      {
+        Game.InvokeBlockFallResolved();
       }
     }
 
