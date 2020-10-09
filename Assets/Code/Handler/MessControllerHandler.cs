@@ -7,6 +7,8 @@ namespace Code.Handler
   {
     
     public GameObject messBlockPrefab;
+    public BoardHandler boardHandler;
+    
     private MessFallLogic _messFall;
     
     private void Start()
@@ -38,7 +40,7 @@ namespace Code.Handler
       {
         var instantiate = Instantiate(messBlockPrefab);
         var handler = instantiate.GetComponent<MessHandler>();
-        handler.SetRequired(messBlock, Game.SpriteMapping[messBlock.Block]);
+        handler.SetRequired(messBlock, Game.SpriteMapping[messBlock.Block], boardHandler);
       }
     }
     

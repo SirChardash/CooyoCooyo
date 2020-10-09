@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Code.Board;
-using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
@@ -17,15 +16,17 @@ namespace Code.Handler
     private FallingBlock _fallingBlock;
     private BoardState _board;
     private Dictionary<Block, Sprite> _spriteMapping;
+    private ICoordinates _coordinates;
 
     private bool _freeFall;
 
-    public void SetRequired(FallingBlock fallingBlock)
+    public void SetRequired(FallingBlock fallingBlock, ICoordinates coordinates)
     {
       _fallingBlock = fallingBlock;
       _board = Game.Board;
       _spriteMapping = Game.SpriteMapping;
-      staticBlockTransform.position = BoardUtils.GetBoardCoordinates(_fallingBlock.StaticBlock);
+      staticBlockTransform.position = coordinates.GetBoardCoordinates(_fallingBlock.StaticBlock);
+      _coordinates = coordinates;
     }
 
     private void Update()
@@ -52,14 +53,13 @@ namespace Code.Handler
             _fallingBlock.DropDownRotating();
           }
         }
-        
+
         if (IsEmptyBelow(_fallingBlock.StaticBlock) || IsEmptyBelow(_fallingBlock.RotatingBlock))
         {
           return;
         }
       }
 
-      Debug.Log($"{!IsEmptyBelow(_fallingBlock.StaticBlock)}:{!IsEmptyBelow(_fallingBlock.RotatingBlock)}");
       if ((!IsEmptyBelow(_fallingBlock.StaticBlock)
            || !IsEmptyBelow(_fallingBlock.RotatingBlock))
           && (_fallingBlock.ShouldDrop() || _freeFall))
@@ -79,6 +79,11 @@ namespace Code.Handler
 
     private void OnGUI()
     {
+      if (_coordinates == null)
+      {
+        return;
+      }
+
       var staticBlock = _fallingBlock.StaticBlock;
       var rotatingBlock = _fallingBlock.RotatingBlock;
 
@@ -107,8 +112,8 @@ namespace Code.Handler
     {
       var animationProgress = fallingProgress * fallingProgress;
 
-      var startPos = BoardUtils.GetBoardCoordinates(block);
-      var endPos = BoardUtils.GetBoardCoordinates(block + _oneDown);
+      var startPos = _coordinates.GetBoardCoordinates(block);
+      var endPos = _coordinates.GetBoardCoordinates(block + _oneDown);
       var trueProgress =
         _board.IsEmpty(block.x, block.y + 1) &&
         (!topFallingBlock || (_board.IsEmpty(block.x, block.y + 2)))

@@ -6,6 +6,7 @@ namespace Code.Handler
   public class FallingBlockGeneratorHandler : MonoBehaviour
   {
     public GameObject fallingBlockPrefab;
+    public BoardHandler boardHandler;
 
     private FallingBlockGenerator _generator;
     private BoardState _board;
@@ -29,7 +30,7 @@ namespace Code.Handler
       }
 
       var fallingBlock = Instantiate(fallingBlockPrefab);
-      fallingBlock.GetComponent<FallingBlockHandler>().SetRequired(_generator.Next());
+      fallingBlock.GetComponent<FallingBlockHandler>().SetRequired(_generator.Next(), boardHandler);
     }
   }
 }

@@ -1,5 +1,4 @@
 ﻿using Code.Board;
-using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
@@ -8,19 +7,21 @@ namespace Code.Handler
   {
     private MessBlocks.MessBlock _messBlock;
     private Sprite _sprite;
+    private ICoordinates _coordinates;
     private Transform _transform;
 
-    public void SetRequired(MessBlocks.MessBlock messBlock, Sprite sprite)
+    public void SetRequired(MessBlocks.MessBlock messBlock, Sprite sprite, ICoordinates coordinates)
     {
       _messBlock = messBlock;
       _sprite = sprite;
+      _coordinates = coordinates;
     }
     
     private void Start()
     {
       GetComponent<SpriteRenderer>().sprite = _sprite;
       _transform = GetComponent<Transform>();
-      _transform.position = BoardUtils.GetBoardCoordinates(_messBlock.ExpectedPosition.x, 1);
+      _transform.position = _coordinates.GetBoardCoordinates(_messBlock.ExpectedPosition.x, 1);
     }
 
     private void Update()
@@ -30,9 +31,9 @@ namespace Code.Handler
 
     private void OnGUI()
     {
-      _transform.position = Vector2.Lerp(BoardUtils.GetBoardCoordinates(
+      _transform.position = Vector2.Lerp(_coordinates.GetBoardCoordinates(
           _messBlock.ExpectedPosition.x, 1),
-        BoardUtils.GetBoardCoordinates(_messBlock.ExpectedPosition.x, _messBlock.ExpectedPosition.y), t:
+        _coordinates.GetBoardCoordinates(_messBlock.ExpectedPosition.x, _messBlock.ExpectedPosition.y), t:
         _messBlock.GetBlockProgress() * _messBlock.GetBlockProgress()
       );
     }

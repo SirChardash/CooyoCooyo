@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Code.Board;
-using Code.Common;
 using UnityEngine;
 
 namespace Code.Handler
 {
-  public class BoardHandler : MonoBehaviour
+  public class BoardHandler : MonoBehaviour, ICoordinates
   {
     private BoardState _board;
     private BoardCleaner _cleaner;
@@ -13,9 +12,14 @@ namespace Code.Handler
     private Dictionary<Block, Sprite> _spriteMapping;
 
     public GameObject blockPrefab;
+    public Transform playFieldTransform;
+    public SpriteRenderer playFieldRenderer;
 
     private int _boardHeight;
     private int _boardWidth;
+    private float _blockOffsetX;
+    private float _blockOffsetY;
+    private Vector2 _startingPosition;
 
     private CleaningResult _cleaningResult;
     private List<Block[,]> _animationStates;
@@ -24,6 +28,16 @@ namespace Code.Handler
     {
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
+      
+      var size = playFieldRenderer.size;
+      var position = playFieldTransform.position;
+      _blockOffsetX = size.x / (_boardWidth + (_boardWidth - 1) / 20f);
+      _blockOffsetY = size.y / (_boardHeight + (_boardHeight - 1) / 20f);
+      
+      _startingPosition = position
+                          + new Vector3(-size.x / 2, size.y / 2, position.z)
+                          + new Vector3(_blockOffsetX / 2, -_blockOffsetY / 2, position.z);
+      
       _board = Game.Board;
       _cleaner = new BoardCleaner(_board.Height, _board.Width);
       _renderBoard = new SpriteRenderer[_boardHeight, _boardWidth];
@@ -32,7 +46,7 @@ namespace Code.Handler
         for (var y = 0; y < _boardHeight; y++)
         {
           var block = Instantiate(blockPrefab);
-          block.transform.position = BoardUtils.GetBoardCoordinates(x, y);
+          block.transform.position = GetBoardCoordinates(x, y);
           _renderBoard[y, x] = block.GetComponent<SpriteRenderer>();
         }
       }
@@ -80,7 +94,7 @@ namespace Code.Handler
         }
       }
     }
-    
+
     private void HandleFallingBlockPlacement(Vector2Int staticBlock, Vector2Int rotatingBlock, Block staticCode,
       Block rotatingCode)
     {
@@ -110,6 +124,18 @@ namespace Code.Handler
           _renderBoard[y, x].sprite = _board.Get(x, y) != 0 ? _spriteMapping[_board.Get(x, y)] : null;
         }
       }
+    }
+
+    public Vector2 GetBoardCoordinates(int x, int y)
+    {
+      return new Vector2(
+        _startingPosition.x + 1.05f * _blockOffsetX * x,
+        _startingPosition.y - 1.05f * _blockOffsetY * y);
+    }
+
+    public Vector2 GetBoardCoordinates(Vector2Int pos)
+    {
+      return GetBoardCoordinates(pos.x, pos.y);
     }
   }
 }
