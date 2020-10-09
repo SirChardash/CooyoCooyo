@@ -25,10 +25,10 @@ namespace Code.Board
     
     public void Update(float deltaTime, BoardState boardState)
     {
-      if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
       _timeFalling += deltaTime;
-
       if (_fallFast) return;
+
+      if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
 
       if (Input.GetKeyDown(KeyCode.LeftArrow)
           && boardState.IsEmpty(StaticBlock.x - 1, StaticBlock.y)
