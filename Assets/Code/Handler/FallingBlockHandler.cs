@@ -18,15 +18,62 @@ namespace Code.Handler
     private Dictionary<Block, Sprite> _spriteMapping;
     private ICoordinates _coordinates;
 
+    /// <summary>
+    /// Means that one block is placed and the other one is falling down separately.
+    /// </summary>
     private bool _freeFall;
 
-    public void SetRequired(FallingBlock fallingBlock, ICoordinates coordinates)
+    public void SetRequired(FallingBlock fallingBlock, ICoordinates coordinates, InputHandler input)
     {
       _fallingBlock = fallingBlock;
       _board = Game.Board;
       _spriteMapping = Game.SpriteMapping;
       staticBlockTransform.position = coordinates.GetBoardCoordinates(_fallingBlock.StaticBlock);
       _coordinates = coordinates;
+      input.RotatePressed += TryRotate;
+      input.LeftPressed += TryMoveLeft;
+      input.RightPressed += TryMoveRight;
+      input.FallFastPressed += StartFallFast;
+    }
+
+    private void TryRotate()
+    {
+      if (!_fallingBlock.FallFastMode)
+      {
+        _fallingBlock.TryRotate(_board);
+      }
+    }
+
+    private void TryMoveLeft()
+    {
+      if (!_fallingBlock.FallFastMode
+          && _board.IsEmpty(_fallingBlock.StaticBlock.x - 1, _fallingBlock.StaticBlock.y)
+          && _board.IsEmpty(_fallingBlock.RotatingBlock.x - 1, _fallingBlock.RotatingBlock.y))
+      {
+        _fallingBlock.StaticBlock.x--;
+        _fallingBlock.RotatingBlock.x--;
+      }
+    }
+
+    private void TryMoveRight()
+    {
+      if (!_fallingBlock.FallFastMode
+          && _board.IsEmpty(_fallingBlock.StaticBlock.x + 1, _fallingBlock.StaticBlock.y)
+          && _board.IsEmpty(_fallingBlock.RotatingBlock.x + 1, _fallingBlock.RotatingBlock.y))
+      {
+        _fallingBlock.StaticBlock.x++;
+        _fallingBlock.RotatingBlock.x++;
+      }
+    }
+
+    private void StartFallFast()
+    {
+      if (!_fallingBlock.FallFastMode
+          && _board.IsEmpty(_fallingBlock.StaticBlock.x, _fallingBlock.StaticBlock.y + 1)
+          && _board.IsEmpty(_fallingBlock.RotatingBlock.x, _fallingBlock.RotatingBlock.y + 1))
+      {
+        _fallingBlock.FallFast();
+      }
     }
 
     private void Update()
@@ -72,7 +119,10 @@ namespace Code.Handler
         );
         Destroy(gameObject);
       }
-      else HandleFastFall();
+      else if (_fallingBlock.ShouldDrop())
+      {
+        _fallingBlock.DropDown();
+      }
 
       _fallingBlock.Update(Time.deltaTime, _board);
     }
@@ -116,22 +166,10 @@ namespace Code.Handler
       var endPos = _coordinates.GetBoardCoordinates(block + _oneDown);
       var trueProgress =
         _board.IsEmpty(block.x, block.y + 1) &&
-        (!topFallingBlock || (_board.IsEmpty(block.x, block.y + 2)))
+        (!topFallingBlock || _board.IsEmpty(block.x, block.y + 2))
           ? animationProgress
           : 0;
       return Vector2.Lerp(startPos, endPos, t: trueProgress);
-    }
-
-    private void HandleFastFall()
-    {
-      if (Input.GetKeyDown(KeyCode.DownArrow)
-          && _board.IsEmpty(_fallingBlock.StaticBlock.x, _fallingBlock.StaticBlock.y + 1)
-          && _board.IsEmpty(_fallingBlock.RotatingBlock.x, _fallingBlock.RotatingBlock.y + 1))
-      {
-        _fallingBlock.FallFast();
-      }
-
-      if (_fallingBlock.ShouldDrop()) _fallingBlock.DropDown();
     }
 
     private bool IsEmptyBelow(Vector2Int position)

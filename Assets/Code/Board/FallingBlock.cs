@@ -7,7 +7,7 @@ namespace Code.Board
     private float _timeToFall = 0.5f;
     private float _timeFalling;
 
-    private bool _fallFast;
+    public bool FallFastMode;
 
     public Vector2Int StaticBlock;
     public Vector2Int RotatingBlock;
@@ -26,24 +26,6 @@ namespace Code.Board
     public void Update(float deltaTime, BoardState boardState)
     {
       _timeFalling += deltaTime;
-      if (_fallFast) return;
-
-      if (Input.GetKeyDown(KeyCode.UpArrow)) TryRotate(boardState);
-
-      if (Input.GetKeyDown(KeyCode.LeftArrow)
-          && boardState.IsEmpty(StaticBlock.x - 1, StaticBlock.y)
-          && boardState.IsEmpty(RotatingBlock.x - 1, RotatingBlock.y))
-      {
-        StaticBlock.x--;
-        RotatingBlock.x--;
-      }
-      else if (Input.GetKeyDown(KeyCode.RightArrow)
-               && boardState.IsEmpty(StaticBlock.x + 1, StaticBlock.y)
-               && boardState.IsEmpty(RotatingBlock.x + 1, RotatingBlock.y))
-      {
-        StaticBlock.x++;
-        RotatingBlock.x++;
-      }
     }
 
     public void DropDownStatic()
@@ -69,7 +51,7 @@ namespace Code.Board
     public void FallFast()
     {
       _timeToFall /= 10;
-      _fallFast = true;
+      FallFastMode = true;
       _timeFalling = _timeToFall;
     }
 
@@ -83,7 +65,7 @@ namespace Code.Board
       return GetBlockProgress() >= 1f;
     }
 
-    private void TryRotate(BoardState boardState)
+    public void TryRotate(BoardState boardState)
     {
       switch (Orientation)
       {
