@@ -29,7 +29,8 @@ namespace Code.Handler
       {
         for (var y = 0; y < 5; y++)
         {
-          var block = Instantiate(blockPrefab);
+          var block = Instantiate(blockPrefab, transform, true);
+          block.name = $"Block#{x}-{y}";
           block.transform.position = new Vector2(basePosition.x + Config.Scale * x, basePosition.y + Config.Scale * y);
           _renderObjectives[y, x] = block.GetComponent<SpriteRenderer>();
         }

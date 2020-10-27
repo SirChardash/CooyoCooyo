@@ -5,12 +5,12 @@ namespace Code.Handler
 {
   public class MessControllerHandler : MonoBehaviour
   {
-    
     public GameObject messBlockPrefab;
     public BoardHandler boardHandler;
-    
+    public Transform boardTransform;
+
     private MessFallLogic _messFall;
-    
+
     private void Start()
     {
       _messFall = new MessFallLogic(Game.Board);
@@ -36,19 +36,20 @@ namespace Code.Handler
 
     private void InstantiateMess(MessBlocks messBlocks)
     {
+      var i = 0;
       foreach (var messBlock in messBlocks.Blocks)
       {
-        var instantiate = Instantiate(messBlockPrefab);
+        var instantiate = Instantiate(messBlockPrefab, boardTransform.transform, false);
+        instantiate.name = $"Mess#{++i}";
         var handler = instantiate.GetComponent<MessHandler>();
         handler.SetRequired(messBlock, Game.SpriteMapping[messBlock.Block], boardHandler);
       }
     }
-    
+
     private void Resume(MessBlocks messBlocks)
     {
       Game.State = Game.GameState.MessFalling;
       enabled = true;
     }
-    
   }
 }
