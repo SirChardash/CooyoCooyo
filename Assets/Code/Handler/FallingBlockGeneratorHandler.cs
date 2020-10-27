@@ -8,6 +8,7 @@ namespace Code.Handler
     public GameObject fallingBlockPrefab;
     public BoardHandler boardHandler;
     public InputHandler inputHandler;
+    public Transform boardTransform;
     
     private FallingBlockGenerator _generator;
     private BoardState _board;
@@ -30,7 +31,8 @@ namespace Code.Handler
         return;
       }
 
-      var fallingBlock = Instantiate(fallingBlockPrefab);
+      var fallingBlock = Instantiate(fallingBlockPrefab, boardTransform.transform, false);
+      fallingBlock.name = "FallingBlock";
       fallingBlock.GetComponent<FallingBlockHandler>().SetRequired(_generator.Next(), boardHandler, inputHandler);
     }
   }

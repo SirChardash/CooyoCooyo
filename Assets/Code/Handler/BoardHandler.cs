@@ -14,7 +14,8 @@ namespace Code.Handler
     public GameObject blockPrefab;
     public Transform playFieldTransform;
     public SpriteRenderer playFieldRenderer;
-
+    public Transform boardTransform;
+    
     private int _boardHeight;
     private int _boardWidth;
     private float _blockOffsetX;
@@ -28,16 +29,19 @@ namespace Code.Handler
     {
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
-      
+
       var size = playFieldRenderer.size;
       var position = playFieldTransform.position;
+      var localScale = boardTransform.localScale;
+      position.Scale(new Vector3(1 / localScale.x, 1 / localScale.y)); // I don't know why
+
       _blockOffsetX = size.x / (_boardWidth + (_boardWidth - 1) / 20f);
       _blockOffsetY = size.y / (_boardHeight + (_boardHeight - 1) / 20f);
-      
+
       _startingPosition = position
                           + new Vector3(-size.x / 2, size.y / 2, position.z)
                           + new Vector3(_blockOffsetX / 2, -_blockOffsetY / 2, position.z);
-      
+
       _board = Game.Board;
       _cleaner = new BoardCleaner(_board.Height, _board.Width);
       _renderBoard = new SpriteRenderer[_boardHeight, _boardWidth];
@@ -45,7 +49,8 @@ namespace Code.Handler
       {
         for (var y = 0; y < _boardHeight; y++)
         {
-          var block = Instantiate(blockPrefab);
+          var block = Instantiate(blockPrefab, playFieldTransform, false);
+          block.name = $"Block#{y}-{x}";
           block.transform.position = GetBoardCoordinates(x, y);
           _renderBoard[y, x] = block.GetComponent<SpriteRenderer>();
         }
@@ -128,9 +133,10 @@ namespace Code.Handler
 
     public Vector2 GetBoardCoordinates(int x, int y)
     {
+      var localScale = boardTransform.localScale;
       return new Vector2(
-        _startingPosition.x + 1.05f * _blockOffsetX * x,
-        _startingPosition.y - 1.05f * _blockOffsetY * y);
+        (_startingPosition.x + 1.05f * _blockOffsetX * x) * localScale.x,
+        (_startingPosition.y - 1.05f * _blockOffsetY * y) * localScale.y);
     }
 
     public Vector2 GetBoardCoordinates(Vector2Int pos)
