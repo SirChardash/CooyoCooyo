@@ -15,7 +15,10 @@ namespace Code.Handler
     public Transform playFieldTransform;
     public SpriteRenderer playFieldRenderer;
     public Transform boardTransform;
-    
+    public new Camera camera;
+    public SpriteRenderer boardBackgroundRenderer;
+    public CameraChangeListener cameraChangeListener;
+
     private int _boardHeight;
     private int _boardWidth;
     private float _blockOffsetX;
@@ -27,20 +30,11 @@ namespace Code.Handler
 
     void Start()
     {
+      gameObject.SetActive(false);
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
 
-      var size = playFieldRenderer.size;
-      var position = playFieldTransform.position;
-      var localScale = boardTransform.localScale;
-      position.Scale(new Vector3(1 / localScale.x, 1 / localScale.y)); // I don't know why
-
-      _blockOffsetX = size.x / (_boardWidth + (_boardWidth - 1) / 20f);
-      _blockOffsetY = size.y / (_boardHeight + (_boardHeight - 1) / 20f);
-
-      _startingPosition = position
-                          + new Vector3(-size.x / 2, size.y / 2, position.z)
-                          + new Vector3(_blockOffsetX / 2, -_blockOffsetY / 2, position.z);
+      RefreshPosition();
 
       _board = Game.Board;
       _cleaner = new BoardCleaner(_board.Height, _board.Width);
@@ -61,6 +55,8 @@ namespace Code.Handler
       Game.LevelEnd += () => Destroy(this);
       Game.Poof += HandlePoof;
       Game.BlockFall += HandleFallingBlockPlacement;
+      cameraChangeListener.CameraChanged += RefreshPosition;
+      cameraChangeListener.CameraChanged += () => gameObject.SetActive(true);
     }
 
     void Update()
@@ -69,6 +65,13 @@ namespace Code.Handler
       {
         HandleCleaningAnimation(Time.deltaTime);
       }
+    }
+
+    private void RefreshPosition()
+    {
+      boardTransform.localScale = BoardScale();
+      boardTransform.position = BoardPosition();
+      _startingPosition = FallingBlockStartingPosition();
     }
 
     private void HandlePoof(CleaningResult cleaningResult)
@@ -142,6 +145,38 @@ namespace Code.Handler
     public Vector2 GetBoardCoordinates(Vector2Int pos)
     {
       return GetBoardCoordinates(pos.x, pos.y);
+    }
+
+    private Vector3 BoardPosition()
+    {
+      var screenAspect = Screen.width / (float) Screen.height;
+      var cameraHeight = camera.orthographicSize;
+      var boardHalfSize = boardTransform.localScale * boardBackgroundRenderer.size / 2;
+      return (Vector2) camera.transform.position
+             + new Vector2(-cameraHeight * screenAspect, cameraHeight) * 0.9f
+             + new Vector2(boardHalfSize.x, -boardHalfSize.y);
+    }
+
+    private Vector3 BoardScale()
+    {
+      var displayWidth = 2 * camera.orthographicSize * Screen.width / Screen.height;
+      var scale = 0.5f * displayWidth / boardBackgroundRenderer.size.x;
+      return new Vector3(scale, scale, 1);
+    }
+
+    private Vector3 FallingBlockStartingPosition()
+    {
+      var size = playFieldRenderer.size;
+      var position = playFieldTransform.position;
+      var localScale = boardTransform.localScale;
+      position.Scale(new Vector3(1 / localScale.x, 1 / localScale.y)); // I don't know why
+
+      _blockOffsetX = size.x / (_boardWidth + (_boardWidth - 1) / 20f);
+      _blockOffsetY = size.y / (_boardHeight + (_boardHeight - 1) / 20f);
+
+      return position
+             + new Vector3(-size.x / 2, size.y / 2, position.z)
+             + new Vector3(_blockOffsetX / 2, -_blockOffsetY / 2, position.z);
     }
   }
 }
