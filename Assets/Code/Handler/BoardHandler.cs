@@ -17,7 +17,6 @@ namespace Code.Handler
     public Transform boardTransform;
     public new Camera camera;
     public SpriteRenderer boardBackgroundRenderer;
-    public CameraChangeListener cameraChangeListener;
 
     private int _boardHeight;
     private int _boardWidth;
@@ -30,13 +29,14 @@ namespace Code.Handler
 
     void Start()
     {
-      gameObject.SetActive(false);
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
 
-      RefreshPosition();
-
-      _board = Game.Board;
+      boardTransform.localScale = BoardScale();
+      boardTransform.position = BoardPosition();
+      _startingPosition = FallingBlockStartingPosition();
+      
+      _board = Game.ActiveGame.Board;
       _cleaner = new BoardCleaner(_board.Height, _board.Width);
       _renderBoard = new SpriteRenderer[_boardHeight, _boardWidth];
       for (var x = 0; x < _boardWidth; x++)
@@ -50,13 +50,11 @@ namespace Code.Handler
         }
       }
 
-      _spriteMapping = Game.SpriteMapping;
+      _spriteMapping = Game.ActiveGame.SpriteMapping;
 
-      Game.LevelEnd += () => Destroy(this);
-      Game.Poof += HandlePoof;
-      Game.BlockFall += HandleFallingBlockPlacement;
-      cameraChangeListener.CameraChanged += RefreshPosition;
-      cameraChangeListener.CameraChanged += () => gameObject.SetActive(true);
+      Game.ActiveGame.LevelEnd += () => Destroy(this);
+      Game.ActiveGame.Poof += HandlePoof;
+      Game.ActiveGame.BlockFall += HandleFallingBlockPlacement;
     }
 
     void Update()
@@ -67,16 +65,9 @@ namespace Code.Handler
       }
     }
 
-    private void RefreshPosition()
-    {
-      boardTransform.localScale = BoardScale();
-      boardTransform.position = BoardPosition();
-      _startingPosition = FallingBlockStartingPosition();
-    }
-
     private void HandlePoof(CleaningResult cleaningResult)
     {
-      Game.State = Game.GameState.CleanResolution;
+      Game.ActiveGame.State = Game.GameState.CleanResolution;
       _cleaningResult = cleaningResult;
       _animationStates = new List<Block[,]>(_cleaningResult.BoardStates);
     }
@@ -94,9 +85,9 @@ namespace Code.Handler
         _slideProgress -= SlideDuration;
         if (_animationStates.Count == 0)
         {
-          Game.State = _cleaningResult.Penalty > 0 ? Game.GameState.MessFalling : Game.GameState.BlockFalling;
-          Game.InvokeBlockClear(_cleaningResult);
-          if (_cleaningResult.Penalty == 0) Game.InvokeBlockFallResolved();
+          Game.ActiveGame.State = _cleaningResult.Penalty > 0 ? Game.GameState.MessFalling : Game.GameState.BlockFalling;
+          Game.ActiveGame.InvokeBlockClear(_cleaningResult);
+          if (_cleaningResult.Penalty == 0) Game.ActiveGame.InvokeBlockFallResolved();
           _animationStates = null;
           _cleaningResult = null;
         }
@@ -115,11 +106,11 @@ namespace Code.Handler
       var cleaningResult = _cleaner.TryClean(_board);
       if (cleaningResult.AnythingHappened())
       {
-        Game.InvokePoof(cleaningResult);
+        Game.ActiveGame.InvokePoof(cleaningResult);
       }
       else
       {
-        Game.InvokeBlockFallResolved();
+        Game.ActiveGame.InvokeBlockFallResolved();
       }
     }
 

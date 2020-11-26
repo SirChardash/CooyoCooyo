@@ -13,22 +13,22 @@ namespace Code.Handler
 
     private void Start()
     {
-      _messFall = new MessFallLogic(Game.Board);
-      Game.MessFall += InstantiateMess;
-      Game.MessFall += _messFall.Accept;
-      Game.MessFall += Resume;
+      _messFall = new MessFallLogic(Game.ActiveGame.Board);
+      Game.ActiveGame.MessFall += InstantiateMess;
+      Game.ActiveGame.MessFall += _messFall.Accept;
+      Game.ActiveGame.MessFall += Resume;
       enabled = false;
     }
 
     private void Update()
     {
-      if (Game.State == Game.GameState.MessFalling)
+      if (Game.ActiveGame.State == Game.GameState.MessFalling)
       {
         _messFall.Update(Time.deltaTime);
         if (_messFall.IsDone())
         {
-          Game.State = Game.GameState.BlockFalling;
-          Game.InvokeBlockFallResolved();
+          Game.ActiveGame.State = Game.GameState.BlockFalling;
+          Game.ActiveGame.InvokeBlockFallResolved();
           enabled = false;
         }
       }
@@ -42,13 +42,13 @@ namespace Code.Handler
         var instantiate = Instantiate(messBlockPrefab, boardTransform.transform, false);
         instantiate.name = $"Mess#{++i}";
         var handler = instantiate.GetComponent<MessHandler>();
-        handler.SetRequired(messBlock, Game.SpriteMapping[messBlock.Block], boardHandler);
+        handler.SetRequired(messBlock, Game.ActiveGame.SpriteMapping[messBlock.Block], boardHandler);
       }
     }
 
     private void Resume(MessBlocks messBlocks)
     {
-      Game.State = Game.GameState.MessFalling;
+      Game.ActiveGame.State = Game.GameState.MessFalling;
       enabled = true;
     }
   }

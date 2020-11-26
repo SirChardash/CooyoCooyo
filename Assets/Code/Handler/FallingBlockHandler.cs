@@ -26,8 +26,8 @@ namespace Code.Handler
     public void SetRequired(FallingBlock fallingBlock, ICoordinates coordinates, InputHandler input)
     {
       _fallingBlock = fallingBlock;
-      _board = Game.Board;
-      _spriteMapping = Game.SpriteMapping;
+      _board = Game.ActiveGame.Board;
+      _spriteMapping = Game.ActiveGame.SpriteMapping;
       staticBlockTransform.position = coordinates.GetBoardCoordinates(_fallingBlock.StaticBlock);
       _coordinates = coordinates;
       input.RotatePressed += TryRotate;
@@ -111,7 +111,7 @@ namespace Code.Handler
            || !IsEmptyBelow(_fallingBlock.RotatingBlock))
           && (_fallingBlock.ShouldDrop() || _freeFall))
       {
-        Game.InvokeBlockFall(
+        Game.ActiveGame.InvokeBlockFall(
           _fallingBlock.StaticBlock,
           _fallingBlock.RotatingBlock,
           _fallingBlock.StaticCode,

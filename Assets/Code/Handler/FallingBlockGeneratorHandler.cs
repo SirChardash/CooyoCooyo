@@ -15,11 +15,11 @@ namespace Code.Handler
 
     private void Start()
     {
-      _generator = Game.FallingBlockGenerator;
-      _board = Game.Board;
-      Game.BlockFallResolved += Create;
-      Game.LevelEnd += () => Game.BlockFallResolved -= Create;
-      Game.InvokeBlockFallResolved();
+      _generator = Game.ActiveGame.FallingBlockGenerator;
+      _board = Game.ActiveGame.Board;
+      Game.ActiveGame.BlockFallResolved += Create;
+      Game.ActiveGame.LevelEnd += () => Game.ActiveGame.BlockFallResolved -= Create;
+      Game.ActiveGame.InvokeBlockFallResolved();
     }
 
     private void Create()
@@ -27,7 +27,7 @@ namespace Code.Handler
       if (!_board.IsEmpty(_generator.StartingX, 0)
           || !_board.IsEmpty(_generator.StartingX, 1))
       {
-        Game.InvokeLevelEnd();
+        Game.ActiveGame.InvokeLevelEnd();
         return;
       }
 

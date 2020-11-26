@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/LevelPlay.unity
+    guid: 1885ed3a61453ec44989f5c1eba993e2
   m_configObjects: {}

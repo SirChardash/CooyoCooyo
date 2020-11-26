@@ -16,8 +16,8 @@ namespace Code.Handler
 
     private void Start()
     {
-      _spriteMapping = Game.SpriteMapping;
-      _fallingBlockGenerator = Game.FallingBlockGenerator;
+      _spriteMapping = Game.ActiveGame.SpriteMapping;
+      _fallingBlockGenerator = Game.ActiveGame.FallingBlockGenerator;
       var levelObjectives = new List<LevelObjective>
       {
         new LevelObjective(new Dictionary<Block, int> {{Block.Block1, 2}, {Block.Block2, 3}, {Block.Block3, 1}}),
@@ -36,7 +36,7 @@ namespace Code.Handler
         }
       }
 
-      Game.BlockClear += UpdateScoreboard;
+      Game.ActiveGame.BlockClear += UpdateScoreboard;
       DrawObjectives();
     }
 
@@ -46,7 +46,7 @@ namespace Code.Handler
       var messBlocks = _fallingBlockGenerator.Mess(penalty,
         new BoardState(cleaningResult.BoardStates[cleaningResult.BoardStates.Count - 1]));
       cleaningResult.Penalty = penalty;
-      if (penalty > 0) Game.InvokeMessFall(messBlocks);
+      if (penalty > 0) Game.ActiveGame.InvokeMessFall(messBlocks);
       DrawObjectives();
       
       if (_scoreboard.IsComplete()) End();
@@ -77,7 +77,7 @@ namespace Code.Handler
 
     private void End()
     {
-      Game.InvokeLevelEnd();
+      Game.ActiveGame.InvokeLevelEnd();
       Debug.Log("objectives complete");
       Destroy(controller);
     }
