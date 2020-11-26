@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: 719052934}
   - component: {fileID: 719052933}
   - component: {fileID: 719052936}
+  - component: {fileID: 719052937}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -397,6 +398,19 @@ MonoBehaviour:
   m_CropFrameX: 0
   m_CropFrameY: 0
   m_StretchFill: 0
+--- !u!114 &719052937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719052932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d885fac4cdc4557b9f73dba4ec81b87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 719052934}
 --- !u!1 &732957650
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,3 +1070,4 @@ MonoBehaviour:
   boardTransform: {fileID: 1926362077}
   camera: {fileID: 719052934}
   boardBackgroundRenderer: {fileID: 1323382634}
+  cameraChangeListener: {fileID: 719052937}

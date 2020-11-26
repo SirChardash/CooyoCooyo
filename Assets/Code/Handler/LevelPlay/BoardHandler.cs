@@ -17,7 +17,8 @@ namespace Code.Handler.LevelPlay
     public Transform boardTransform;
     public new Camera camera;
     public SpriteRenderer boardBackgroundRenderer;
-
+    public CameraChangeListener cameraChangeListener;
+    
     private int _boardHeight;
     private int _boardWidth;
     private float _blockOffsetX;
@@ -32,9 +33,7 @@ namespace Code.Handler.LevelPlay
       _boardHeight = Game.BoardHeight;
       _boardWidth = Game.BoardWidth;
 
-      boardTransform.localScale = BoardScale();
-      boardTransform.position = BoardPosition();
-      _startingPosition = FallingBlockStartingPosition();
+      RefreshPosition();
       
       _board = Game.ActiveGame.Board;
       _cleaner = new BoardCleaner(_board.Height, _board.Width);
@@ -55,6 +54,8 @@ namespace Code.Handler.LevelPlay
       Game.ActiveGame.LevelEnd += () => Destroy(this);
       Game.ActiveGame.Poof += HandlePoof;
       Game.ActiveGame.BlockFall += HandleFallingBlockPlacement;
+      cameraChangeListener.CameraChanged += RefreshPosition;
+      cameraChangeListener.CameraChanged += () => gameObject.SetActive(true);
     }
 
     void Update()
@@ -65,6 +66,13 @@ namespace Code.Handler.LevelPlay
       }
     }
 
+    private void RefreshPosition()
+    {
+      boardTransform.localScale = BoardScale();
+      boardTransform.position = BoardPosition();
+      _startingPosition = FallingBlockStartingPosition();
+    }
+    
     private void HandlePoof(CleaningResult cleaningResult)
     {
       Game.ActiveGame.State = Game.GameState.CleanResolution;
