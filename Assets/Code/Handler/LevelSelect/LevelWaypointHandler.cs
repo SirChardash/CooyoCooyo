@@ -3,7 +3,7 @@ using Code.LevelSelect;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Code.Handler.LevelSelectHandler
+namespace Code.Handler.LevelSelect
 {
   public class LevelWaypointHandler : MonoBehaviour
   {

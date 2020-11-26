@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Code.Handler
+namespace Code.Handler.LevelPlay
 {
   public interface ICoordinates
   {

@@ -1,7 +1,7 @@
 ﻿using Code.Board;
 using UnityEngine;
 
-namespace Code.Handler
+namespace Code.Handler.LevelPlay
 {
   public class MessHandler : MonoBehaviour
   {
