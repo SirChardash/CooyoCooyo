@@ -995,6 +995,7 @@ GameObject:
   - component: {fileID: 1926362080}
   - component: {fileID: 1926362079}
   - component: {fileID: 1926362078}
+  - component: {fileID: 1926362081}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -1071,3 +1072,15 @@ MonoBehaviour:
   camera: {fileID: 719052934}
   boardBackgroundRenderer: {fileID: 1323382634}
   cameraChangeListener: {fileID: 719052937}
+--- !u!114 &1926362081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926362076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2077ddac25b4b3698dc9d8c0109ce2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

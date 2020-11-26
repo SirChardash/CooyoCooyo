@@ -9,7 +9,7 @@ namespace Code.Handler.LevelPlay
     public BoardHandler boardHandler;
     public InputHandler inputHandler;
     public Transform boardTransform;
-    
+
     private FallingBlockGenerator _generator;
     private BoardState _board;
 
@@ -18,7 +18,6 @@ namespace Code.Handler.LevelPlay
       _generator = Game.ActiveGame.FallingBlockGenerator;
       _board = Game.ActiveGame.Board;
       Game.ActiveGame.BlockFallResolved += Create;
-      Game.ActiveGame.LevelEnd += () => Game.ActiveGame.BlockFallResolved -= Create;
       Game.ActiveGame.InvokeBlockFallResolved();
     }
 
@@ -27,6 +26,7 @@ namespace Code.Handler.LevelPlay
       if (!_board.IsEmpty(_generator.StartingX, 0)
           || !_board.IsEmpty(_generator.StartingX, 1))
       {
+        Debug.Log("level failed");
         Game.ActiveGame.InvokeLevelEnd();
         return;
       }

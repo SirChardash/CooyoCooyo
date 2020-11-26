@@ -51,7 +51,6 @@ namespace Code.Handler.LevelPlay
 
       _spriteMapping = Game.ActiveGame.SpriteMapping;
 
-      Game.ActiveGame.LevelEnd += () => Destroy(this);
       Game.ActiveGame.Poof += HandlePoof;
       Game.ActiveGame.BlockFall += HandleFallingBlockPlacement;
       cameraChangeListener.CameraChanged += RefreshPosition;
